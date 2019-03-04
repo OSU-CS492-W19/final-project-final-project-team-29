@@ -9,11 +9,6 @@ import com.google.gson.Gson;
         import java.io.Serializable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.text.ParseException;
-        import java.text.SimpleDateFormat;
-        import java.util.ArrayList;
-        import java.util.Date;
-        import java.util.TimeZone;
 
 
 class PokeType{
@@ -31,6 +26,7 @@ public class PokeAPIUtils {
     public final static String POKE_SEARCH_TYPE = "type";
 
 
+    // All of the possible Pokemon Types
     public static final int NORMAL = 1;
     public static final int FIGHTING = 2;
     public static final int FLYING = 3;
@@ -53,8 +49,7 @@ public class PokeAPIUtils {
     public static final int SHADOW = 10002;
 
 
-
-
+    // Constrains a PokemonType to be one of the ints above
     @IntDef({NORMAL, FIGHTING, FLYING, POISON, GROUND, ROCK, BUG,
             GHOST, STEEL, FIRE, WATER, GRASS, ELECTRIC, PSYCHIC, ICE,
             DRAGON, DARK, FAIRY, UNKNOWN, SHADOW})
@@ -67,20 +62,25 @@ public class PokeAPIUtils {
      * This class is used as a final representation of a single forecast item.  It condenses the
      * classes below that are used for parsing the OWN JSON response with Gson.
      */
-    public static class ForecastItem implements Serializable {
-        public Date dateTime;
-        public String description;
-        public String icon;
-        public long temperature;
-        public long temperatureLow;
-        public long temperatureHigh;
-        public long humidity;
-        public long windSpeed;
-        public String windDirection;
+
+    public static class GeneralAPIResult implements Serializable {
+        public String name;
+        public String url;
+    }
+
+    public static class GeneralTypeReturn implements Serializable {
+        public String name;
+        public GeneralAPIResult[] moves;
+        public GeneralAPIResult[] pokemon;
+    }
+
+    public static class GeneralSearchReturn implements Serializable {
+        public int count;
+        public GeneralAPIResult[] results;
     }
 
 
-
+    // Builds a URL for a search for all of the pokemon types
     public static String buildURL() {
         Uri uri =  Uri.parse(POKE_BASE_URL).buildUpon()
                 .appendPath(POKE_SEARCH_TYPE)
@@ -91,6 +91,7 @@ public class PokeAPIUtils {
         return uri.toString();
     }
 
+    // Builds a URL for a search for the given type
     public static String buildURL(@PokemonType int type)
     {
         Uri uri =  Uri.parse(POKE_BASE_URL).buildUpon()
@@ -105,9 +106,24 @@ public class PokeAPIUtils {
 
 
 
-    public static ArrayList<ForecastItem> parseForecastJSON(String forecastJSON) {
+    public static GeneralSearchReturn parseGeneralSearchJSON(String searchJSON) {
         Gson gson = new Gson();
-        return null;
+
+        GeneralSearchReturn results = gson.fromJson(searchJSON, GeneralSearchReturn.class);
+
+        Log.d(TAG, "The count of the results is: " + String.valueOf(results.count));
+
+        return results;
+    }
+
+    public static GeneralTypeReturn parseTypeSearchJSON(String typeSearchJSON) {
+        Gson gson = new Gson();
+
+        GeneralTypeReturn results = gson.fromJson(typeSearchJSON, GeneralTypeReturn.class);
+
+        Log.d(TAG, "The name of the type is: " + results.name);
+
+        return results;
     }
 
 
