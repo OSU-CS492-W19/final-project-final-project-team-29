@@ -2,12 +2,9 @@ package com.example.pokemontypechecker;
 
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
-import android.view.View;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.design.widget.NavigationView;
@@ -37,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = PokeAPIUtils.class.getSimpleName();
 
-    private TextView mMainContentText;
+    private TextView mTempMainContentText;
 
     private RecyclerView mPokemonTypesRV;
 
@@ -68,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMainContentText = findViewById(R.id.main_content_text);
+        mTempMainContentText = findViewById(R.id.temp_main_content_text);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         mPokemonTypesRV = findViewById(R.id.rv_types_list);
@@ -80,13 +77,6 @@ public class MainActivity extends AppCompatActivity implements
 
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getListOfTypes();
-            }
-        });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -97,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mMainContentText = findViewById(R.id.main_content_text);
+        mTempMainContentText = findViewById(R.id.temp_main_content_text);
 
     }
 
@@ -181,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mMainContentText.setText("Starting data fetch");
+            mTempMainContentText.setText("Starting data fetch");
         }
 
         @Override
@@ -200,9 +190,9 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         protected void onPostExecute(String s) {
             if (s != null) {
-                mMainContentText.setText(s);
+                mTempMainContentText.setText(s);
             } else {
-                mMainContentText.setText("Error Getting Data");
+                mTempMainContentText.setText("Error Getting Data");
             }
         }
     }
