@@ -59,24 +59,41 @@ public class PokeAPIUtils {
     }
 
     /*
-     * This class is used as a final representation of a single forecast item.  It condenses the
-     * classes below that are used for parsing the OWN JSON response with Gson.
+     * These are the classes used to parse the PokeAPI JSON
      */
 
-    public static class GeneralAPIResult implements Serializable {
+    public static class NameUrlPair implements Serializable {
         public String name;
         public String url;
     }
 
-    public static class GeneralTypeReturn implements Serializable {
-        public String name;
-        public GeneralAPIResult[] moves;
-        public GeneralAPIResult[] pokemon;
+    public static class PokeApiMove implements Serializable{
+        public NameUrlPair move;
     }
 
-    public static class GeneralSearchReturn implements Serializable {
+    public static class PokeApiType implements Serializable{
+        public NameUrlPair type;
+    }
+
+    public static class PokeApiPokemon implements Serializable{
+        public NameUrlPair pokemon;
+    }
+
+    public static class PokeApiTypeReturn implements Serializable {
+        public String name;
+        public NameUrlPair[] moves;
+        public PokeApiPokemon[] pokemon;
+    }
+
+    public static class PokeApiPokemonSearchReturn implements Serializable{
+        public String name;
+        public PokeApiType[] types;
+        public PokeApiMove[] moves;
+    }
+
+    public static class PokeApiGeneralTypeSearchReturn implements Serializable {
         public int count;
-        public GeneralAPIResult[] results;
+        public NameUrlPair[] results;
     }
 
 
@@ -106,20 +123,20 @@ public class PokeAPIUtils {
 
 
 
-    public static GeneralSearchReturn parseGeneralSearchJSON(String searchJSON) {
+    public static PokeApiGeneralTypeSearchReturn parseGeneralSearchJSON(String searchJSON) {
         Gson gson = new Gson();
 
-        GeneralSearchReturn results = gson.fromJson(searchJSON, GeneralSearchReturn.class);
+        PokeApiGeneralTypeSearchReturn results = gson.fromJson(searchJSON, PokeApiGeneralTypeSearchReturn.class);
 
         Log.d(TAG, "The count of the results is: " + String.valueOf(results.count));
 
         return results;
     }
 
-    public static GeneralTypeReturn parseTypeSearchJSON(String typeSearchJSON) {
+    public static PokeApiTypeReturn parseTypeSearchJSON(String typeSearchJSON) {
         Gson gson = new Gson();
 
-        GeneralTypeReturn results = gson.fromJson(typeSearchJSON, GeneralTypeReturn.class);
+        PokeApiTypeReturn results = gson.fromJson(typeSearchJSON, PokeApiTypeReturn.class);
 
         Log.d(TAG, "The name of the type is: " + results.name);
 
