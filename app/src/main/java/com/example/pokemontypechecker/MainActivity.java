@@ -1,9 +1,11 @@
 package com.example.pokemontypechecker;
 
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,14 +15,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import com.example.pokemontypechecker.utils.NetworkUtils;
+import com.example.pokemontypechecker.utils.PokeAPIUtils;
+
+import java.io.IOException;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = PokeAPIUtils.class.getSimpleName();
+
+    private TextView mMainContentText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mMainContentText = findViewById(R.id.main_content_text);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -28,8 +43,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                getListOfTypes();
             }
         });
 
@@ -41,6 +55,17 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mMainContentText = findViewById(R.id.main_content_text);
+
+    }
+
+    private void getListOfTypes()
+    {
+        //String url = "https://google.com";
+        String url = PokeAPIUtils.buildURL();
+        Log.d(TAG, url);
+        new TempNetworkTask().execute(url);
     }
 
     @Override
@@ -98,5 +123,36 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    class TempNetworkTask extends AsyncTask<String, Void, String>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mMainContentText.setText("Starting data fetch");
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+            String url = urls[0];
+            String results = null;
+            try {
+                Log.d(TAG, url);
+                results = NetworkUtils.doHTTPGet(url);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return results;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (s != null) {
+                mMainContentText.setText(s);
+            } else {
+                mMainContentText.setText("Error Getting Data");
+            }
+        }
     }
 }
