@@ -2,11 +2,14 @@ package com.example.pokemontypechecker;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -22,12 +25,43 @@ import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
 import java.io.IOException;
 
+import com.example.pokemontypechecker.utils.PokemonUtils;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+import java.util.ArrayList;
+import java.util.List;
+
+
+
+public class MainActivity extends AppCompatActivity implements
+        PokemonTypeAdapter.OnTypeClickListener,
+        NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = PokeAPIUtils.class.getSimpleName();
 
     private TextView mMainContentText;
+
+    private RecyclerView mPokemonTypesRV;
+
+    private PokemonTypeAdapter mPokemonTypeAdapter;
+
+    private List<String> mTypes = new ArrayList<String>() {{
+        add("fire");
+        add("water");
+        add("poison");
+        add("psychic");
+        add("ice");
+        add("ghost");
+        add("steel");
+        add("fairy");
+        add("grass");
+        add("bug");
+        add("fighting");
+        add("dark");
+        add("dragon");
+        add("normal");
+        add("ground");
+        add("rock");
+        add("electric");
+    }};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +71,13 @@ public class MainActivity extends AppCompatActivity
         mMainContentText = findViewById(R.id.main_content_text);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        mPokemonTypesRV = findViewById(R.id.rv_types_list);
+
+        mPokemonTypeAdapter = new PokemonTypeAdapter(this);
+        mPokemonTypesRV.setAdapter(mPokemonTypeAdapter);
+        mPokemonTypesRV.setLayoutManager(new LinearLayoutManager(this));
+        mPokemonTypesRV.setHasFixedSize(true);
+
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -66,7 +107,17 @@ public class MainActivity extends AppCompatActivity
         String url = PokeAPIUtils.buildURL();
         Log.d(TAG, url);
         new TempNetworkTask().execute(url);
+
+        mPokemonTypeAdapter.updateSearchResults(mTypes);
     }
+
+    @Override
+    public void onTypeClick(String s) {
+        Intent intent = new Intent(this, PokemonActivity.class);
+        intent.putExtra(PokemonUtils.POKEMON_TYPE, s);
+        startActivity(intent);
+    }
+
 
     @Override
     public void onBackPressed() {
