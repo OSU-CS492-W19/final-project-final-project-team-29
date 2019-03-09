@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.example.pokemontypechecker.data.Pokemon;
 import com.example.pokemontypechecker.utils.NetworkUtils;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
@@ -89,6 +90,15 @@ public class MainActivity extends AppCompatActivity implements
 
         mTempMainContentText = findViewById(R.id.temp_main_content_text);
 
+        getListOfTypes();
+
+    }
+
+    private void getSpecificType(@PokeAPIUtils.PokemonEnumType int type){
+        String url = PokeAPIUtils.buildURL(type);
+        Log.d(TAG, url);
+        new TempNetworkTask().execute(url);
+
     }
 
     private void getListOfTypes()
@@ -105,7 +115,8 @@ public class MainActivity extends AppCompatActivity implements
     public void onTypeClick(String s) {
         Intent intent = new Intent(this, PokemonActivity.class);
         intent.putExtra(PokemonUtils.POKEMON_TYPE, s);
-        startActivity(intent);
+        //startActivity(intent);
+        getSpecificType(PokeAPIUtils.POISON);
     }
 
 
@@ -190,7 +201,8 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         protected void onPostExecute(String s) {
             if (s != null) {
-                mTempMainContentText.setText(s);
+                Pokemon[] ParsedString = PokeAPIUtils.parseTypeSearchJSON(s);
+                mTempMainContentText.setText(String.valueOf(ParsedString[0].name));
             } else {
                 mTempMainContentText.setText("Error Getting Data");
             }
