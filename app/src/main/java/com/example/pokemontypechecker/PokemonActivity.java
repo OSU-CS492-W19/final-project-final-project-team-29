@@ -23,7 +23,7 @@ public class PokemonActivity extends AppCompatActivity implements PokemonAdapter
     private String mPokemonType;
 
     // TODO: will remove this, temporary list of pokemon names
-    private List<Pokemon> mPokemon = null;
+    private List<Pokemon> mPokemon = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,33 +49,13 @@ public class PokemonActivity extends AppCompatActivity implements PokemonAdapter
             mPokemonType = intent.getStringExtra(PokemonUtils.POKEMON_TYPE);
         }
 
-        mPokemon = new ArrayList<Pokemon>() {{
-            add(new Pokemon() {{
-                id = 1;
-                name = "Pikachu";
-                url = "https://pokemon.com/1";
-            }});
-            add(new Pokemon() {{
-                id = 2;
-                name = "Geodude";
-                url = "https://pokemon.com/2";
-            }});
-            add(new Pokemon() {{
-                id = 3;
-                name = "Gyrados";
-                url = "https://pokemon.com/3";
-            }});
-            add(new Pokemon() {{
-                id = 4;
-                name = "Magikarp";
-                url = "https://pokemon.com/4";
-            }});
-            add(new Pokemon() {{
-                id = 5;
-                name = "Rattata";
-                url = "https://pokemon.com/5";
-            }});
-        }};
+        Pokemon p = new Pokemon();
+        p.id = 1;
+        p.name = "Pikachu";
+        p.url = "https://pokemon.com/1";
+
+        mPokemon.add(p);
+
 
         mPokemonHeaderTV.setText(mPokemonType);
         mPokemonAdapter.updatePokemonResults(mPokemon);
