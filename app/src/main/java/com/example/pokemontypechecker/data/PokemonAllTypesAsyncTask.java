@@ -8,9 +8,19 @@ import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
 import java.io.IOException;
 
-public class PokemonAsyncTask extends AsyncTask<String, Void, String> {
+public class PokemonAllTypesAsyncTask extends AsyncTask<String, Void, String> {
     private static final String TAG = PokeAPIUtils.class.getSimpleName();
+    private Callback mCallback;
+    private String mURL;
 
+
+    public interface Callback {
+        void onSearchFinished(PokeAPIUtils.PokeApiGeneralTypeSearchReturn searchResults);
+    }
+    public PokemonAllTypesAsyncTask(String url, Callback callback) {
+        mURL = url;
+        mCallback = callback;
+    }
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -31,10 +41,10 @@ public class PokemonAsyncTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String s) {
+        PokeAPIUtils.PokeApiGeneralTypeSearchReturn searchResults = null;
         if (s != null) {
-
-        } else {
-
+            searchResults = PokeAPIUtils.parseGeneralSearchJSON(s);
         }
+        mCallback.onSearchFinished(searchResults);
     }
 }

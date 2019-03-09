@@ -1,9 +1,12 @@
 package com.example.pokemontypechecker;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,8 +18,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
+import com.example.pokemontypechecker.data.PokemonAllTypesViewModel;
+import com.example.pokemontypechecker.data.Status;
 import com.example.pokemontypechecker.utils.NetworkUtils;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
@@ -38,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements
     private RecyclerView mPokemonTypesRV;
 
     private PokemonTypeAdapter mPokemonTypeAdapter;
+    private PokemonAllTypesViewModel mAllTypesViewModel;
 
     private List<String> mTypes = new ArrayList<String>() {{
         add("fire");
@@ -85,6 +92,35 @@ public class MainActivity extends AppCompatActivity implements
         navigationView.setNavigationItemSelectedListener(this);
 
 
+        mAllTypesViewModel = ViewModelProviders.of(this).get(PokemonAllTypesViewModel.class);
+
+        mAllTypesViewModel.getSearchResults().observe(this, new Observer<PokeAPIUtils.PokeApiGeneralTypeSearchReturn>() {
+            @Override
+            public void onChanged(@Nullable PokeAPIUtils.PokeApiGeneralTypeSearchReturn allTypes) {
+                mPokemonTypeAdapter.updateSearchResults(allTypes);
+            }
+        });
+
+        mAllTypesViewModel.getLoadingStatus().observe(this, new Observer<Status>() {
+            @Override
+            public void onChanged(@Nullable Status status) {
+                if (status == Status.LOADING) {
+                    //mLoadingPB.setVisibility(View.VISIBLE);
+                } else if (status == Status.SUCCESS) {
+                    //mLoadingPB.setVisibility(View.INVISIBLE);
+                    //mSearchResultsRV.setVisibility(View.VISIBLE);
+                    //mLoadingErrorTV.setVisibility(View.INVISIBLE);
+                } else {
+                    //mLoadingPB.setVisibility(View.INVISIBLE);
+                    //mSearchResultsRV.setVisibility(View.INVISIBLE);
+                    //mLoadingErrorTV.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        
+        
+        getListOfTypes();
+
     }
 
     private void getListOfTypes()
@@ -92,9 +128,9 @@ public class MainActivity extends AppCompatActivity implements
         //String url = "https://google.com";
         String url = PokeAPIUtils.buildURL();
         Log.d(TAG, url);
-        new TempNetworkTask().execute(url);
+        mAllTypesViewModel.loadSearchResults(url);
 
-        mPokemonTypeAdapter.updateSearchResults(mTypes);
+        //mPokemonTypeAdapter.updateSearchResults(mTypes);
     }
 
     @Override
