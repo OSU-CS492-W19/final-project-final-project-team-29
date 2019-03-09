@@ -12,4 +12,5 @@
     <string name="drawer_nav_item_share">Share</string>
     <string name="drawer_nav_item_send">Send</string>
     <string name="drawer_nav_title_communicate">Communicate</string>
+    <string name="title_activity_temp">TempActivity</string>
 </resources>
