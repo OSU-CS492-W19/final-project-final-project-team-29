@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = PokeAPIUtils.class.getSimpleName();
 
-    private TextView mTempMainContentText;
 
     private RecyclerView mPokemonTypesRV;
 
@@ -65,8 +64,6 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTempMainContentText = findViewById(R.id.temp_main_content_text);
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         mPokemonTypesRV = findViewById(R.id.rv_types_list);
 
@@ -87,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mTempMainContentText = findViewById(R.id.temp_main_content_text);
 
     }
 
@@ -166,34 +162,5 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
-    class TempNetworkTask extends AsyncTask<String, Void, String>{
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mTempMainContentText.setText("Starting data fetch");
-        }
-
-        @Override
-        protected String doInBackground(String... urls) {
-            String url = urls[0];
-            String results = null;
-            try {
-                Log.d(TAG, url);
-                results = NetworkUtils.doHTTPGet(url);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return results;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            if (s != null) {
-                mTempMainContentText.setText(s);
-            } else {
-                mTempMainContentText.setText("Error Getting Data");
-            }
-        }
-    }
 }
