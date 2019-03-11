@@ -4,17 +4,16 @@ import android.net.Uri;
 import android.support.annotation.IntDef;
 import android.util.Log;
 
+import com.example.pokemontypechecker.data.NameUrlPair;
+import com.example.pokemontypechecker.data.Pokemon;
+import com.example.pokemontypechecker.data.PokemonDetail;
+import com.example.pokemontypechecker.data.PokemonType;
 import com.google.gson.Gson;
 
         import java.io.Serializable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-
-class PokeType{
-
-
-}
 
 public class PokeAPIUtils {
 
@@ -49,12 +48,12 @@ public class PokeAPIUtils {
     public static final int SHADOW = 10002;
 
 
-    // Constrains a PokemonType to be one of the ints above
+    // Constrains a PokemonEnumType to be one of the ints above
     @IntDef({NORMAL, FIGHTING, FLYING, POISON, GROUND, ROCK, BUG,
             GHOST, STEEL, FIRE, WATER, GRASS, ELECTRIC, PSYCHIC, ICE,
             DRAGON, DARK, FAIRY, UNKNOWN, SHADOW})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface PokemonType{
+    public @interface PokemonEnumType {
 
     }
 
@@ -62,10 +61,6 @@ public class PokeAPIUtils {
      * These are the classes used to parse the PokeAPI JSON
      */
 
-    public static class NameUrlPair implements Serializable {
-        public String name;
-        public String url;
-    }
 
     public static class PokeApiMove implements Serializable{
         public NameUrlPair move;
@@ -109,7 +104,7 @@ public class PokeAPIUtils {
     }
 
     // Builds a URL for a search for the given type
-    public static String buildURL(@PokemonType int type)
+    public static String buildURL(@PokemonEnumType int type)
     {
         Uri uri =  Uri.parse(POKE_BASE_URL).buildUpon()
                 .appendPath(POKE_SEARCH_TYPE)
@@ -123,24 +118,42 @@ public class PokeAPIUtils {
 
 
 
-    public static PokeApiGeneralTypeSearchReturn parseGeneralSearchJSON(String searchJSON) {
+    public static PokemonDetail parsePokemonSearchJSON(String searchJSON) {
+        Gson gson = new Gson();
+
+        PokeApiPokemonSearchReturn results = gson.fromJson(searchJSON, PokeApiPokemonSearchReturn.class);
+
+        Log.d(TAG, "The count of the results is: " + results.name);
+
+        PokemonDetail fullPokemon = new PokemonDetail();
+        fullPokemon.name = results.name;
+        //fullPokemon.moves = results.moves
+
+
+        return fullPokemon;
+    }
+
+    public static PokeApiGeneralTypeSearchReturn parseGeneralTypeSearchJSON(String searchJSON) {
         Gson gson = new Gson();
 
         PokeApiGeneralTypeSearchReturn results = gson.fromJson(searchJSON, PokeApiGeneralTypeSearchReturn.class);
 
-        Log.d(TAG, "The count of the results is: " + String.valueOf(results.count));
-
         return results;
     }
 
-    public static PokeApiTypeReturn parseTypeSearchJSON(String typeSearchJSON) {
+    public static Pokemon[] parseTypeSearchJSON(String typeSearchJSON) {
         Gson gson = new Gson();
 
         PokeApiTypeReturn results = gson.fromJson(typeSearchJSON, PokeApiTypeReturn.class);
 
         Log.d(TAG, "The name of the type is: " + results.name);
 
-        return results;
+        Pokemon[] returnResult = new Pokemon[results.pokemon.length];
+        for (int i = 0; i < results.pokemon.length; i++) {
+            returnResult[i] = (Pokemon)results.pokemon[i].pokemon;
+        }
+
+        return returnResult;
     }
 
 

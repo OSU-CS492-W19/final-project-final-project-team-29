@@ -17,6 +17,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.example.pokemontypechecker.data.Pokemon;
+import com.example.pokemontypechecker.data.PokemonType;
 import com.example.pokemontypechecker.utils.NetworkUtils;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
@@ -33,9 +35,6 @@ public class MainActivity extends AppCompatActivity implements
         PokemonTypeAdapter.OnTypeClickListener,
         NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = PokeAPIUtils.class.getSimpleName();
-
-    private TextView mTempMainContentText;
-
     private RecyclerView mPokemonTypesRV;
 
     private PokemonTypeAdapter mPokemonTypeAdapter;
@@ -65,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTempMainContentText = findViewById(R.id.temp_main_content_text);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         mPokemonTypesRV = findViewById(R.id.rv_types_list);
@@ -87,7 +85,14 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mTempMainContentText = findViewById(R.id.temp_main_content_text);
+        getListOfTypes();
+
+    }
+
+    private void getSpecificType(@PokeAPIUtils.PokemonEnumType int type){
+        String url = PokeAPIUtils.buildURL(type);
+        Log.d(TAG, url);
+        new TempNetworkTask().execute(url);
 
     }
 
@@ -105,7 +110,8 @@ public class MainActivity extends AppCompatActivity implements
     public void onTypeClick(String s) {
         Intent intent = new Intent(this, PokemonActivity.class);
         intent.putExtra(PokemonUtils.POKEMON_TYPE, s);
-        startActivity(intent);
+        //startActivity(intent);
+        getSpecificType(PokeAPIUtils.POISON);
     }
 
 
@@ -171,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mTempMainContentText.setText("Starting data fetch");
+           // mTempMainContentText.setText("Starting data fetch");
         }
 
         @Override
@@ -190,9 +196,10 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         protected void onPostExecute(String s) {
             if (s != null) {
-                mTempMainContentText.setText(s);
+                PokeAPIUtils.PokeApiGeneralTypeSearchReturn ParsedString = PokeAPIUtils.parseGeneralTypeSearchJSON(s);
+                //mTempMainContentText.setText(String.valueOf(ParsedString[0].name));
             } else {
-                mTempMainContentText.setText("Error Getting Data");
+                //mTempMainContentText.setText("Error Getting Data");
             }
         }
     }
