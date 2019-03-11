@@ -133,20 +133,12 @@ public class PokeAPIUtils {
         return fullPokemon;
     }
 
-    public static PokemonType[] parseGeneralSearchJSON(String searchJSON) {
+    public static PokeApiGeneralTypeSearchReturn parseGeneralTypeSearchJSON(String searchJSON) {
         Gson gson = new Gson();
 
         PokeApiGeneralTypeSearchReturn results = gson.fromJson(searchJSON, PokeApiGeneralTypeSearchReturn.class);
 
-        Log.d(TAG, "The count of the results is: " + String.valueOf(results.count));
-
-
-        PokemonType[] returnResult = new PokemonType[results.count];
-        for (int i = 0; i < results.count; i++) {
-            returnResult[i] = (PokemonType)results.results[i];
-        }
-
-        return returnResult;
+        return results;
     }
 
     public static Pokemon[] parseTypeSearchJSON(String typeSearchJSON) {
