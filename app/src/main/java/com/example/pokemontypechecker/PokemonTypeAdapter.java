@@ -6,21 +6,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
+import com.example.pokemontypechecker.data.NameUrlPair;
+import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
 public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.PokemonTypeViewHolder> {
-    private List<String> mTypes;
+    private PokeAPIUtils.PokeApiGeneralTypeSearchReturn mTypes;
     OnTypeClickListener mTypeClickListener;
 
     public interface OnTypeClickListener {
-        void onTypeClick(String type);
+        void onTypeClick(NameUrlPair type);
     }
 
     PokemonTypeAdapter(OnTypeClickListener typeClickListener) {
         mTypeClickListener = typeClickListener;
     }
 
-    public void updateSearchResults(List<String> types) {
+    public void updateSearchResults(PokeAPIUtils.PokeApiGeneralTypeSearchReturn types) {
         mTypes = types;
         notifyDataSetChanged();
     }
@@ -28,7 +29,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
     @Override
     public int getItemCount() {
         if (mTypes != null) {
-            return mTypes.size();
+            return mTypes.count;
         } else {
             return 0;
         }
@@ -44,7 +45,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull PokemonTypeViewHolder holder, int position) {
-        holder.bind(mTypes.get(position));
+        holder.bind(mTypes.results[position]);
     }
 
     class PokemonTypeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -58,12 +59,12 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 
         @Override
         public void onClick(View v) {
-            String type = mTypes.get(getAdapterPosition());
+            NameUrlPair type = mTypes.results[getAdapterPosition()];
             mTypeClickListener.onTypeClick(type);
         }
 
-        public void bind(String repo) {
-            mPokemonTypeTV.setText(repo);
+        public void bind(NameUrlPair type) {
+            mPokemonTypeTV.setText(type.name);
         }
     }
 }

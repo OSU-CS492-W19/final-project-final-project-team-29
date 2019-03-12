@@ -8,20 +8,34 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <!--<TextView-->
-        <!--android:id="@+id/tv_temp_main_content_text"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Hello World!"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintRight_toRightOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+
+    <TextView
+        android:id="@+id/tv_loading_error_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:background="@android:color/holo_red_light"
+        android:padding="16dp"
+        android:text="@string/loading_error_message"
+        android:textColor="#fff"
+        android:textSize="24sp"
+        android:visibility="invisible" />
+
+
+    <ProgressBar
+        android:id="@+id/pb_loading_indicator"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_margin="32dp"
+        android:visibility="invisible" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_types_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 
 
 </android.support.constraint.ConstraintLayout>

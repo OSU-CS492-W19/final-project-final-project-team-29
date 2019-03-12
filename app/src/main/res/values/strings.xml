@@ -13,4 +13,5 @@
     <string name="drawer_nav_item_send">Send</string>
     <string name="drawer_nav_title_communicate">Communicate</string>
     <string name="title_activity_temp">TempActivity</string>
+    <string name="loading_error_message">Whoops, we couldn\'t load the results.</string>
 </resources>
