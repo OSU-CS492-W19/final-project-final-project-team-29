@@ -9,8 +9,6 @@ import android.widget.TextView;
 import com.example.pokemontypechecker.data.NameUrlPair;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
-import java.util.List;
-
 public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.PokemonTypeViewHolder> {
     private PokeAPIUtils.PokeApiGeneralTypeSearchReturn mTypes;
     OnTypeClickListener mTypeClickListener;

@@ -94,7 +94,7 @@ public class PokemonActivity extends AppCompatActivity implements PokemonAdapter
     }
 
     @Override
-    public void onPokemonClick(PokeAPIUtils.PokeApiPokemon pokemon) {
+    public void onPokemonClick(NameUrlPair pokemon) {
         Intent intent = new Intent(this, PokemonDetailsActivity.class);
         intent.putExtra(PokemonUtils.POKEMON_NAME, pokemon);
         startActivity(intent);

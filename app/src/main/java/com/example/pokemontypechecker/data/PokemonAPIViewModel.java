@@ -33,6 +33,10 @@ public class PokemonAPIViewModel extends ViewModel{
         return mTypeSearchResults;
     }
 
+    public LiveData<PokeAPIUtils.PokeApiPokemonSearchReturn> getPokemonSearchResult() {
+        return mPokemonSearchResult;
+    }
+
     public LiveData<Status> getLoadingStatus() {
         return mLoadingStatus;
     }

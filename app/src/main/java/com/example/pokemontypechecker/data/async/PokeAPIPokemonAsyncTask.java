@@ -10,14 +10,14 @@ import java.io.IOException;
 
 public class PokeAPIPokemonAsyncTask extends AsyncTask<Void, Void, String> {
     private static final String TAG = PokeAPIPokemonAsyncTask.class.getSimpleName();
-    private PokeAPITypeAsyncTask.Callback mCallback;
+    private PokeAPIPokemonAsyncTask.Callback mCallback;
     private String mURL;
 
     public interface Callback {
-        void onSearchFinished(PokeAPIUtils.PokeApiTypeReturn searchResults);
+        void onSearchFinished(PokeAPIUtils.PokeApiPokemonSearchReturn searchResults);
     }
 
-    public PokeAPIPokemonAsyncTask(String url, PokeAPITypeAsyncTask.Callback callback) {
+    public PokeAPIPokemonAsyncTask(String url, PokeAPIPokemonAsyncTask.Callback callback) {
         mURL = url;
         mCallback = callback;
     }
@@ -41,9 +41,9 @@ public class PokeAPIPokemonAsyncTask extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPostExecute(String s) {
-        PokeAPIUtils.PokeApiTypeReturn searchResults = null;
+        PokeAPIUtils.PokeApiPokemonSearchReturn searchResults = null;
         if (s != null) {
-            searchResults = PokeAPIUtils.parseTypeSearchJSON(s);
+            searchResults = PokeAPIUtils.parsePokemonSearchJSON(s);
         }
         mCallback.onSearchFinished(searchResults);
     }

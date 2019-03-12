@@ -34,7 +34,7 @@ public class PokemonAPIRepository implements
         mTypeSearchResults.setValue(null);
 
         mPokemonSearchResult = new MutableLiveData<>();
-        mPokemonSearchResult.setValue(null);;
+        mPokemonSearchResult.setValue(null);
 
         mLoadingStatus = new MutableLiveData<>();
         mLoadingStatus.setValue(Status.SUCCESS);
@@ -119,13 +119,13 @@ public class PokemonAPIRepository implements
         }
     }
 
-//    @Override
-//    public void onSearchFinished(PokeAPIUtils.PokeApiPokemonSearchReturn searchResults) {
-//        mPokemonSearchResult.setValue(searchResults);
-//        if (searchResults != null) {
-//            mLoadingStatus.setValue(Status.SUCCESS);
-//        } else {
-//            mLoadingStatus.setValue(Status.ERROR);
-//        }
-//    }
+    @Override
+    public void onSearchFinished(PokeAPIUtils.PokeApiPokemonSearchReturn searchResults) {
+        mPokemonSearchResult.setValue(searchResults);
+        if (searchResults != null) {
+            mLoadingStatus.setValue(Status.SUCCESS);
+        } else {
+            mLoadingStatus.setValue(Status.ERROR);
+        }
+    }
 }
