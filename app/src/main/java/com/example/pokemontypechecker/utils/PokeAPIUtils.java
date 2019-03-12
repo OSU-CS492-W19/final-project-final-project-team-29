@@ -141,19 +141,12 @@ public class PokeAPIUtils {
         return results;
     }
 
-    public static Pokemon[] parseTypeSearchJSON(String typeSearchJSON) {
+    public static PokeApiTypeReturn parseTypeSearchJSON(String typeSearchJSON) {
         Gson gson = new Gson();
 
         PokeApiTypeReturn results = gson.fromJson(typeSearchJSON, PokeApiTypeReturn.class);
 
-        Log.d(TAG, "The name of the type is: " + results.name);
-
-        Pokemon[] returnResult = new Pokemon[results.pokemon.length];
-        for (int i = 0; i < results.pokemon.length; i++) {
-            returnResult[i] = (Pokemon)results.pokemon[i].pokemon;
-        }
-
-        return returnResult;
+        return results;
     }
 
 

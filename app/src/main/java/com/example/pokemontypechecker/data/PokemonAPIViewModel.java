@@ -11,18 +11,24 @@ import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
 public class PokemonAPIViewModel extends ViewModel{
 
-    private LiveData<PokeAPIUtils.PokeApiGeneralTypeSearchReturn> mSearchResults;
+    private LiveData<PokeAPIUtils.PokeApiGeneralTypeSearchReturn> mTypesSearchResults;
+    private LiveData<PokeAPIUtils.PokeApiTypeReturn> mTypeSearchResults;
     private LiveData<Status> mLoadingStatus;
     private PokemonAPIRepository mRepository;
 
     public PokemonAPIViewModel() {
         mRepository = new PokemonAPIRepository();
-        mSearchResults = mRepository.getSearchResults();
+        mTypesSearchResults = mRepository.getTypesSearchResults();
+        mTypeSearchResults = mRepository.getTypeSearchResults();
         mLoadingStatus = mRepository.getLoadingStatus();
     }
 
-    public LiveData<PokeAPIUtils.PokeApiGeneralTypeSearchReturn> getSearchResults() {
-        return mSearchResults;
+    public LiveData<PokeAPIUtils.PokeApiGeneralTypeSearchReturn> getTypesSearchResults() {
+        return mTypesSearchResults;
+    }
+
+    public LiveData<PokeAPIUtils.PokeApiTypeReturn> getTypeSearchResults() {
+        return mTypeSearchResults;
     }
 
     public LiveData<Status> getLoadingStatus() {
@@ -31,6 +37,10 @@ public class PokemonAPIViewModel extends ViewModel{
 
     public void loadTypesSearchResults(String query) {
         mRepository.loadAllTypesSearchResults(query);
+    }
+
+    public void loadTypeSearchResults(String query) {
+        mRepository.loadTypeSearchResults(query);
     }
 
 }

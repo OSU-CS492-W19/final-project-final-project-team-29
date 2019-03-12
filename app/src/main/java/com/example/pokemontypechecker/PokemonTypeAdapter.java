@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.pokemontypechecker.data.NameUrlPair;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
     OnTypeClickListener mTypeClickListener;
 
     public interface OnTypeClickListener {
-        void onTypeClick(PokeAPIUtils.NameUrlPair type);
+        void onTypeClick(NameUrlPair type);
     }
 
     PokemonTypeAdapter(OnTypeClickListener typeClickListener) {
@@ -60,11 +61,11 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 
         @Override
         public void onClick(View v) {
-            PokeAPIUtils.NameUrlPair type = mTypes.results[getAdapterPosition()];
+            NameUrlPair type = mTypes.results[getAdapterPosition()];
             mTypeClickListener.onTypeClick(type);
         }
 
-        public void bind(PokeAPIUtils.NameUrlPair type) {
+        public void bind(NameUrlPair type) {
             mPokemonTypeTV.setText(type.name);
         }
     }

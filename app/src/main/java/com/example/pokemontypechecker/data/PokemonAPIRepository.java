@@ -6,28 +6,41 @@ import android.arch.lifecycle.MutableLiveData;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.example.pokemontypechecker.data.async.PokeAPITypeAsyncTask;
+import com.example.pokemontypechecker.data.async.PokeAPITypesAsyncTask;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
-public class PokemonAPIRepository implements PokemonAPIAsyncTask.Callback {
+public class PokemonAPIRepository implements
+        PokeAPITypesAsyncTask.Callback,
+        PokeAPITypeAsyncTask.Callback {
     private static final String TAG = PokemonAPIRepository.class.getSimpleName();
 
-    private MutableLiveData<PokeAPIUtils.PokeApiGeneralTypeSearchReturn> mSearchResults;
+    private MutableLiveData<PokeAPIUtils.PokeApiGeneralTypeSearchReturn> mTypesSearchResults;
+    private MutableLiveData<PokeAPIUtils.PokeApiTypeReturn> mTypeSearchResults;
     private MutableLiveData<Status> mLoadingStatus;
 
-    private String mCurrentQuery;
+    private String mTypesCurrentQuery;
+    private String mTypeCurrentQuery;
 
     public PokemonAPIRepository() {
-        mSearchResults = new MutableLiveData<>();
-        mSearchResults.setValue(null);
+        mTypesSearchResults = new MutableLiveData<>();
+        mTypesSearchResults.setValue(null);
+
+        mTypeSearchResults = new MutableLiveData<>();
+        mTypeSearchResults.setValue(null);
 
         mLoadingStatus = new MutableLiveData<>();
         mLoadingStatus.setValue(Status.SUCCESS);
 
-        mCurrentQuery = null;
+        mTypesCurrentQuery = null;
     }
 
-    public LiveData<PokeAPIUtils.PokeApiGeneralTypeSearchReturn> getSearchResults() {
-        return mSearchResults;
+    public LiveData<PokeAPIUtils.PokeApiGeneralTypeSearchReturn> getTypesSearchResults() {
+        return mTypesSearchResults;
+    }
+
+    public LiveData<PokeAPIUtils.PokeApiTypeReturn> getTypeSearchResults() {
+        return mTypeSearchResults;
     }
 
     public MutableLiveData<Status> getLoadingStatus() {
@@ -36,24 +49,46 @@ public class PokemonAPIRepository implements PokemonAPIAsyncTask.Callback {
 
     public void loadAllTypesSearchResults(String query) {
         if (shouldExecuteSearch(query)) {
-            mCurrentQuery = query;
-            mSearchResults.setValue(null);
+            mTypesCurrentQuery = query;
+            mTypesSearchResults.setValue(null);
             mLoadingStatus.setValue(Status.LOADING);
             String url = PokeAPIUtils.buildURL();
             Log.d(TAG, "executing search with url: " + url);
-            new PokemonAPIAsyncTask(url, this).execute();
+            new PokeAPITypesAsyncTask(url, this).execute();
+        } else {
+            Log.d(TAG, "using cached results");
+        }
+    }
+
+    public void loadTypeSearchResults(String url) {
+        if (shouldExecuteSearch(url)) {
+            mTypeCurrentQuery = url;
+            mTypeSearchResults.setValue(null);
+            mLoadingStatus.setValue(Status.LOADING);
+            Log.d(TAG, "executing search with url: " + url);
+            new PokeAPITypeAsyncTask(url, this).execute();
         } else {
             Log.d(TAG, "using cached results");
         }
     }
 
     private boolean shouldExecuteSearch(String query) {
-        return !TextUtils.equals(query, mCurrentQuery);
+    return !TextUtils.equals(query, mTypesCurrentQuery) && !TextUtils.equals(query, mTypeCurrentQuery);
     }
 
     @Override
     public void onSearchFinished(PokeAPIUtils.PokeApiGeneralTypeSearchReturn searchResults) {
-        mSearchResults.setValue(searchResults);
+        mTypesSearchResults.setValue(searchResults);
+        if (searchResults != null) {
+            mLoadingStatus.setValue(Status.SUCCESS);
+        } else {
+            mLoadingStatus.setValue(Status.ERROR);
+        }
+    }
+
+    @Override
+    public void onSearchFinished(PokeAPIUtils.PokeApiTypeReturn searchResults) {
+        mTypeSearchResults.setValue(searchResults);
         if (searchResults != null) {
             mLoadingStatus.setValue(Status.SUCCESS);
         } else {

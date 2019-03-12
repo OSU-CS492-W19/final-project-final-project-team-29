@@ -21,25 +21,21 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.pokemontypechecker.data.Pokemon;
-import com.example.pokemontypechecker.data.PokemonType;
-import com.example.pokemontypechecker.utils.NetworkUtils;
+import com.example.pokemontypechecker.data.NameUrlPair;
+
 import com.example.pokemontypechecker.data.PokemonAPIViewModel;
 import com.example.pokemontypechecker.data.Status;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
-
 import com.example.pokemontypechecker.utils.PokemonUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 
 
 
 public class MainActivity extends AppCompatActivity implements
         PokemonTypeAdapter.OnTypeClickListener,
         NavigationView.OnNavigationItemSelectedListener {
-    private static final String TAG = PokeAPIUtils.class.getSimpleName();
 
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private RecyclerView mPokemonTypesRV;
     private ProgressBar mLoadingIndicatorPB;
@@ -78,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements
 
         mPokemonAPIViewModel = ViewModelProviders.of(this).get(PokemonAPIViewModel.class);
 
-        mPokemonAPIViewModel.getSearchResults().observe(this, new Observer<PokeAPIUtils.PokeApiGeneralTypeSearchReturn>() {
+        mPokemonAPIViewModel.getTypesSearchResults().observe(this, new Observer<PokeAPIUtils.PokeApiGeneralTypeSearchReturn>() {
             @Override
             public void onChanged(@Nullable PokeAPIUtils.PokeApiGeneralTypeSearchReturn allTypes) {
                 mPokemonTypeAdapter.updateSearchResults(allTypes);
@@ -115,11 +111,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onTypeClick(PokeAPIUtils.NameUrlPair type) {
+    public void onTypeClick(NameUrlPair type) {
         Intent intent = new Intent(this, PokemonActivity.class);
         intent.putExtra(PokemonUtils.POKEMON_TYPE, type);
         startActivity(intent);
-        // getSpecificType(PokeAPIUtils.POISON);
     }
 
 
