@@ -1,21 +1,22 @@
 package com.example.pokemontypechecker.data;
 
 
-        import android.arch.lifecycle.LiveData;
-        import android.arch.lifecycle.MutableLiveData;
-        import android.text.TextUtils;
-        import android.util.Log;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.text.TextUtils;
+import android.util.Log;
 
-        import com.example.pokemontypechecker.utils.PokeAPIUtils;
+import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
-public class PokemonSearchAllTypesRepository implements PokemonAllTypesAsyncTask.Callback {
+public class PokemonAPIRepository implements PokemonAPIAsyncTask.Callback {
+    private static final String TAG = PokemonAPIRepository.class.getSimpleName();
 
     private MutableLiveData<PokeAPIUtils.PokeApiGeneralTypeSearchReturn> mSearchResults;
     private MutableLiveData<Status> mLoadingStatus;
 
     private String mCurrentQuery;
 
-    public PokemonSearchAllTypesRepository() {
+    public PokemonAPIRepository() {
         mSearchResults = new MutableLiveData<>();
         mSearchResults.setValue(null);
 
@@ -39,10 +40,10 @@ public class PokemonSearchAllTypesRepository implements PokemonAllTypesAsyncTask
             mSearchResults.setValue(null);
             mLoadingStatus.setValue(Status.LOADING);
             String url = PokeAPIUtils.buildURL();
-            Log.d("GitHubSearchRepository", "executing search with url: " + url);
-            new PokemonAllTypesAsyncTask(url, this).execute();
+            Log.d(TAG, "executing search with url: " + url);
+            new PokemonAPIAsyncTask(url, this).execute();
         } else {
-            Log.d("GitHubSearchRepository", "using cached results");
+            Log.d(TAG, "using cached results");
         }
     }
 

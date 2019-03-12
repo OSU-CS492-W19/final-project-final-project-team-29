@@ -9,16 +9,14 @@ import android.arch.lifecycle.LiveData;
 
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
-import java.util.List;
-
-public class PokemonAllTypesViewModel extends ViewModel{
+public class PokemonAPIViewModel extends ViewModel{
 
     private LiveData<PokeAPIUtils.PokeApiGeneralTypeSearchReturn> mSearchResults;
     private LiveData<Status> mLoadingStatus;
-    private PokemonSearchAllTypesRepository mRepository;
+    private PokemonAPIRepository mRepository;
 
-    public PokemonAllTypesViewModel() {
-        mRepository = new PokemonSearchAllTypesRepository();
+    public PokemonAPIViewModel() {
+        mRepository = new PokemonAPIRepository();
         mSearchResults = mRepository.getSearchResults();
         mLoadingStatus = mRepository.getLoadingStatus();
     }
@@ -31,7 +29,8 @@ public class PokemonAllTypesViewModel extends ViewModel{
         return mLoadingStatus;
     }
 
-    public void loadSearchResults(String query) {
+    public void loadTypesSearchResults(String query) {
         mRepository.loadAllTypesSearchResults(query);
     }
+
 }

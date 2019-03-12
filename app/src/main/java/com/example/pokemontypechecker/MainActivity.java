@@ -3,7 +3,6 @@ package com.example.pokemontypechecker;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,14 +18,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.pokemontypechecker.data.PokemonAllTypesViewModel;
+import com.example.pokemontypechecker.data.PokemonAPIViewModel;
 import com.example.pokemontypechecker.data.Status;
-import com.example.pokemontypechecker.utils.NetworkUtils;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
-
-import java.io.IOException;
 
 import com.example.pokemontypechecker.utils.PokemonUtils;
 
@@ -42,29 +39,11 @@ public class MainActivity extends AppCompatActivity implements
 
 
     private RecyclerView mPokemonTypesRV;
+    private ProgressBar mLoadingIndicatorPB;
+    private TextView mLoadingErrorTV;
 
     private PokemonTypeAdapter mPokemonTypeAdapter;
-    private PokemonAllTypesViewModel mAllTypesViewModel;
-
-    private List<String> mTypes = new ArrayList<String>() {{
-        add("fire");
-        add("water");
-        add("poison");
-        add("psychic");
-        add("ice");
-        add("ghost");
-        add("steel");
-        add("fairy");
-        add("grass");
-        add("bug");
-        add("fighting");
-        add("dark");
-        add("dragon");
-        add("normal");
-        add("ground");
-        add("rock");
-        add("electric");
-    }};
+    private PokemonAPIViewModel mPokemonAPIViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         mPokemonTypesRV = findViewById(R.id.rv_types_list);
+        mLoadingIndicatorPB = findViewById(R.id.pb_loading_indicator);
+        mLoadingErrorTV = findViewById(R.id.tv_loading_error_message);
 
         mPokemonTypeAdapter = new PokemonTypeAdapter(this);
         mPokemonTypesRV.setAdapter(mPokemonTypeAdapter);
@@ -92,28 +73,28 @@ public class MainActivity extends AppCompatActivity implements
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        mAllTypesViewModel = ViewModelProviders.of(this).get(PokemonAllTypesViewModel.class);
+        mPokemonAPIViewModel = ViewModelProviders.of(this).get(PokemonAPIViewModel.class);
 
-        mAllTypesViewModel.getSearchResults().observe(this, new Observer<PokeAPIUtils.PokeApiGeneralTypeSearchReturn>() {
+        mPokemonAPIViewModel.getSearchResults().observe(this, new Observer<PokeAPIUtils.PokeApiGeneralTypeSearchReturn>() {
             @Override
             public void onChanged(@Nullable PokeAPIUtils.PokeApiGeneralTypeSearchReturn allTypes) {
                 mPokemonTypeAdapter.updateSearchResults(allTypes);
             }
         });
 
-        mAllTypesViewModel.getLoadingStatus().observe(this, new Observer<Status>() {
+        mPokemonAPIViewModel.getLoadingStatus().observe(this, new Observer<Status>() {
             @Override
             public void onChanged(@Nullable Status status) {
                 if (status == Status.LOADING) {
-                    //mLoadingPB.setVisibility(View.VISIBLE);
+                    mLoadingIndicatorPB.setVisibility(View.VISIBLE);
                 } else if (status == Status.SUCCESS) {
-                    //mLoadingPB.setVisibility(View.INVISIBLE);
-                    //mSearchResultsRV.setVisibility(View.VISIBLE);
-                    //mLoadingErrorTV.setVisibility(View.INVISIBLE);
+                    mLoadingIndicatorPB.setVisibility(View.INVISIBLE);
+                    mPokemonTypesRV.setVisibility(View.VISIBLE);
+                    mLoadingErrorTV.setVisibility(View.INVISIBLE);
                 } else {
-                    //mLoadingPB.setVisibility(View.INVISIBLE);
-                    //mSearchResultsRV.setVisibility(View.INVISIBLE);
-                    //mLoadingErrorTV.setVisibility(View.VISIBLE);
+                    mLoadingIndicatorPB.setVisibility(View.INVISIBLE);
+                    mPokemonTypesRV.setVisibility(View.INVISIBLE);
+                    mLoadingErrorTV.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -125,18 +106,15 @@ public class MainActivity extends AppCompatActivity implements
 
     private void getListOfTypes()
     {
-        //String url = "https://google.com";
         String url = PokeAPIUtils.buildURL();
         Log.d(TAG, url);
-        mAllTypesViewModel.loadSearchResults(url);
-
-        //mPokemonTypeAdapter.updateSearchResults(mTypes);
+        mPokemonAPIViewModel.loadTypesSearchResults(url);
     }
 
     @Override
-    public void onTypeClick(String s) {
+    public void onTypeClick(PokeAPIUtils.NameUrlPair type) {
         Intent intent = new Intent(this, PokemonActivity.class);
-        intent.putExtra(PokemonUtils.POKEMON_TYPE, s);
+        intent.putExtra(PokemonUtils.POKEMON_TYPE, type);
         startActivity(intent);
     }
 
