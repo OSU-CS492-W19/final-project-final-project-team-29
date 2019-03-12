@@ -110,8 +110,8 @@ public class MainActivity extends AppCompatActivity implements
     public void onTypeClick(String s) {
         Intent intent = new Intent(this, PokemonActivity.class);
         intent.putExtra(PokemonUtils.POKEMON_TYPE, s);
-        //startActivity(intent);
-        getSpecificType(PokeAPIUtils.POISON);
+        startActivity(intent);
+        // getSpecificType(PokeAPIUtils.POISON);
     }
 
 
