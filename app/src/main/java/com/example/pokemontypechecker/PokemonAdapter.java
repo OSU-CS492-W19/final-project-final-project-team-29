@@ -7,23 +7,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.pokemontypechecker.data.NameUrlPair;
 import com.example.pokemontypechecker.data.Pokemon;
+import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
-import java.util.List;
 
 public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder> {
-    private List<Pokemon> mPokemon;
+    private PokeAPIUtils.PokeApiTypeReturn mPokemon;
     private OnPokemonClickListener mPokemonClickListener;
 
     public interface OnPokemonClickListener {
-        void onPokemonClick(Pokemon pokemon);
+        void onPokemonClick(NameUrlPair pokemon);
     }
 
     public PokemonAdapter(OnPokemonClickListener pokemonClickListener) {
         mPokemonClickListener = pokemonClickListener;
     }
 
-    public void updatePokemonResults(List<Pokemon> pokemon) {
+    public void updatePokemonResults(PokeAPIUtils.PokeApiTypeReturn pokemon) {
         mPokemon = pokemon;
         notifyDataSetChanged();
     }
@@ -38,13 +39,13 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
     @Override
     public void onBindViewHolder(@NonNull PokemonViewHolder holder, int position) {
-        holder.bind(mPokemon.get(position));
+        holder.bind(mPokemon.pokemon[position]);
     }
 
     @Override
     public int getItemCount() {
         if (mPokemon != null) {
-            return mPokemon.size();
+            return mPokemon.pokemon.length;
         } else {
             return 0;
         }
@@ -61,12 +62,12 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
         @Override
         public void onClick(View v) {
-            Pokemon pokemon = mPokemon.get(getAdapterPosition());
-            mPokemonClickListener.onPokemonClick(pokemon);
+            PokeAPIUtils.PokeApiPokemon pokemon = mPokemon.pokemon[getAdapterPosition()];
+            mPokemonClickListener.onPokemonClick(pokemon.pokemon);
         }
 
-        public void bind(Pokemon pokemon) {
-            mPokemonNameTV.setText(pokemon.name);
+        public void bind(PokeAPIUtils.PokeApiPokemon pokemon) {
+            mPokemonNameTV.setText(pokemon.pokemon.name);
         }
     }
 }

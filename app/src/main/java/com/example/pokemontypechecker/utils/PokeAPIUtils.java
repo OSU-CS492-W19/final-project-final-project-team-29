@@ -118,19 +118,12 @@ public class PokeAPIUtils {
 
 
 
-    public static PokemonDetail parsePokemonSearchJSON(String searchJSON) {
+    public static PokeApiPokemonSearchReturn parsePokemonSearchJSON(String searchJSON) {
         Gson gson = new Gson();
 
         PokeApiPokemonSearchReturn results = gson.fromJson(searchJSON, PokeApiPokemonSearchReturn.class);
 
-        Log.d(TAG, "The count of the results is: " + results.name);
-
-        PokemonDetail fullPokemon = new PokemonDetail();
-        fullPokemon.name = results.name;
-        //fullPokemon.moves = results.moves
-
-
-        return fullPokemon;
+        return results;
     }
 
     public static PokeApiGeneralTypeSearchReturn parseGeneralTypeSearchJSON(String searchJSON) {
@@ -141,19 +134,12 @@ public class PokeAPIUtils {
         return results;
     }
 
-    public static Pokemon[] parseTypeSearchJSON(String typeSearchJSON) {
+    public static PokeApiTypeReturn parseTypeSearchJSON(String typeSearchJSON) {
         Gson gson = new Gson();
 
         PokeApiTypeReturn results = gson.fromJson(typeSearchJSON, PokeApiTypeReturn.class);
 
-        Log.d(TAG, "The name of the type is: " + results.name);
-
-        Pokemon[] returnResult = new Pokemon[results.pokemon.length];
-        for (int i = 0; i < results.pokemon.length; i++) {
-            returnResult[i] = (Pokemon)results.pokemon[i].pokemon;
-        }
-
-        return returnResult;
+        return results;
     }
 
 

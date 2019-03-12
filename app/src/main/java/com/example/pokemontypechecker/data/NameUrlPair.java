@@ -1,6 +1,8 @@
 package com.example.pokemontypechecker.data;
 
-public class NameUrlPair {
+import java.io.Serializable;
+
+public class NameUrlPair implements Serializable {
     public String name;
     public String url;
 }
