@@ -1,9 +1,11 @@
 package com.example.pokemontypechecker;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,14 +17,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.pokemontypechecker.data.Pokemon;
 import com.example.pokemontypechecker.data.PokemonType;
 import com.example.pokemontypechecker.utils.NetworkUtils;
+import com.example.pokemontypechecker.data.PokemonAPIViewModel;
+import com.example.pokemontypechecker.data.Status;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
-
-import java.io.IOException;
 
 import com.example.pokemontypechecker.utils.PokemonUtils;
 
@@ -35,38 +39,24 @@ public class MainActivity extends AppCompatActivity implements
         PokemonTypeAdapter.OnTypeClickListener,
         NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = PokeAPIUtils.class.getSimpleName();
+
+
     private RecyclerView mPokemonTypesRV;
+    private ProgressBar mLoadingIndicatorPB;
+    private TextView mLoadingErrorTV;
 
     private PokemonTypeAdapter mPokemonTypeAdapter;
-
-    private List<String> mTypes = new ArrayList<String>() {{
-        add("fire");
-        add("water");
-        add("poison");
-        add("psychic");
-        add("ice");
-        add("ghost");
-        add("steel");
-        add("fairy");
-        add("grass");
-        add("bug");
-        add("fighting");
-        add("dark");
-        add("dragon");
-        add("normal");
-        add("ground");
-        add("rock");
-        add("electric");
-    }};
+    private PokemonAPIViewModel mPokemonAPIViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         mPokemonTypesRV = findViewById(R.id.rv_types_list);
+        mLoadingIndicatorPB = findViewById(R.id.pb_loading_indicator);
+        mLoadingErrorTV = findViewById(R.id.tv_loading_error_message);
 
         mPokemonTypeAdapter = new PokemonTypeAdapter(this);
         mPokemonTypesRV.setAdapter(mPokemonTypeAdapter);
@@ -85,31 +75,49 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        mPokemonAPIViewModel = ViewModelProviders.of(this).get(PokemonAPIViewModel.class);
+
+        mPokemonAPIViewModel.getSearchResults().observe(this, new Observer<PokeAPIUtils.PokeApiGeneralTypeSearchReturn>() {
+            @Override
+            public void onChanged(@Nullable PokeAPIUtils.PokeApiGeneralTypeSearchReturn allTypes) {
+                mPokemonTypeAdapter.updateSearchResults(allTypes);
+            }
+        });
+
+        mPokemonAPIViewModel.getLoadingStatus().observe(this, new Observer<Status>() {
+            @Override
+            public void onChanged(@Nullable Status status) {
+                if (status == Status.LOADING) {
+                    mLoadingIndicatorPB.setVisibility(View.VISIBLE);
+                } else if (status == Status.SUCCESS) {
+                    mLoadingIndicatorPB.setVisibility(View.INVISIBLE);
+                    mPokemonTypesRV.setVisibility(View.VISIBLE);
+                    mLoadingErrorTV.setVisibility(View.INVISIBLE);
+                } else {
+                    mLoadingIndicatorPB.setVisibility(View.INVISIBLE);
+                    mPokemonTypesRV.setVisibility(View.INVISIBLE);
+                    mLoadingErrorTV.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        
+        
         getListOfTypes();
-
-    }
-
-    private void getSpecificType(@PokeAPIUtils.PokemonEnumType int type){
-        String url = PokeAPIUtils.buildURL(type);
-        Log.d(TAG, url);
-        new TempNetworkTask().execute(url);
 
     }
 
     private void getListOfTypes()
     {
-        //String url = "https://google.com";
         String url = PokeAPIUtils.buildURL();
         Log.d(TAG, url);
-        new TempNetworkTask().execute(url);
-
-        mPokemonTypeAdapter.updateSearchResults(mTypes);
+        mPokemonAPIViewModel.loadTypesSearchResults(url);
     }
 
     @Override
-    public void onTypeClick(String s) {
+    public void onTypeClick(PokeAPIUtils.NameUrlPair type) {
         Intent intent = new Intent(this, PokemonActivity.class);
-        intent.putExtra(PokemonUtils.POKEMON_TYPE, s);
+        intent.putExtra(PokemonUtils.POKEMON_TYPE, type);
         startActivity(intent);
         // getSpecificType(PokeAPIUtils.POISON);
     }
@@ -172,35 +180,5 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
-    class TempNetworkTask extends AsyncTask<String, Void, String>{
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-           // mTempMainContentText.setText("Starting data fetch");
-        }
-
-        @Override
-        protected String doInBackground(String... urls) {
-            String url = urls[0];
-            String results = null;
-            try {
-                Log.d(TAG, url);
-                results = NetworkUtils.doHTTPGet(url);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return results;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            if (s != null) {
-                PokeAPIUtils.PokeApiGeneralTypeSearchReturn ParsedString = PokeAPIUtils.parseGeneralTypeSearchJSON(s);
-                //mTempMainContentText.setText(String.valueOf(ParsedString[0].name));
-            } else {
-                //mTempMainContentText.setText("Error Getting Data");
-            }
-        }
-    }
 }
