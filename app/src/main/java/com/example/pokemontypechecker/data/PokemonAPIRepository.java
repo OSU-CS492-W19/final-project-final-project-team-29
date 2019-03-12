@@ -6,21 +6,25 @@ import android.arch.lifecycle.MutableLiveData;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.example.pokemontypechecker.data.async.PokeAPIPokemonAsyncTask;
 import com.example.pokemontypechecker.data.async.PokeAPITypeAsyncTask;
 import com.example.pokemontypechecker.data.async.PokeAPITypesAsyncTask;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
 public class PokemonAPIRepository implements
         PokeAPITypesAsyncTask.Callback,
-        PokeAPITypeAsyncTask.Callback {
+        PokeAPITypeAsyncTask.Callback,
+        PokeAPIPokemonAsyncTask.Callback{
     private static final String TAG = PokemonAPIRepository.class.getSimpleName();
 
     private MutableLiveData<PokeAPIUtils.PokeApiGeneralTypeSearchReturn> mTypesSearchResults;
     private MutableLiveData<PokeAPIUtils.PokeApiTypeReturn> mTypeSearchResults;
+    private MutableLiveData<PokeAPIUtils.PokeApiPokemonSearchReturn> mPokemonSearchResult;
     private MutableLiveData<Status> mLoadingStatus;
 
     private String mTypesCurrentQuery;
     private String mTypeCurrentQuery;
+    private String mPokemonCurrentQuery;
 
     public PokemonAPIRepository() {
         mTypesSearchResults = new MutableLiveData<>();
@@ -28,6 +32,9 @@ public class PokemonAPIRepository implements
 
         mTypeSearchResults = new MutableLiveData<>();
         mTypeSearchResults.setValue(null);
+
+        mPokemonSearchResult = new MutableLiveData<>();
+        mPokemonSearchResult.setValue(null);;
 
         mLoadingStatus = new MutableLiveData<>();
         mLoadingStatus.setValue(Status.SUCCESS);
@@ -41,6 +48,10 @@ public class PokemonAPIRepository implements
 
     public LiveData<PokeAPIUtils.PokeApiTypeReturn> getTypeSearchResults() {
         return mTypeSearchResults;
+    }
+
+    public LiveData<PokeAPIUtils.PokeApiPokemonSearchReturn> getPokemonSearchResult() {
+        return mPokemonSearchResult;
     }
 
     public MutableLiveData<Status> getLoadingStatus() {
@@ -72,8 +83,20 @@ public class PokemonAPIRepository implements
         }
     }
 
+    public void loadPokemonSearchResult(String url) {
+        if (shouldExecuteSearch(url)) {
+            mPokemonCurrentQuery = url;
+            mPokemonSearchResult.setValue(null);
+            mLoadingStatus.setValue(Status.LOADING);
+            Log.d(TAG, "executing search with url: " + url);
+            new PokeAPIPokemonAsyncTask(url, this).execute();
+        } else {
+            Log.d(TAG, "using cached results");
+        }
+    }
+
     private boolean shouldExecuteSearch(String query) {
-    return !TextUtils.equals(query, mTypesCurrentQuery) && !TextUtils.equals(query, mTypeCurrentQuery);
+    return !TextUtils.equals(query, mTypesCurrentQuery) && !TextUtils.equals(query, mTypeCurrentQuery) && !TextUtils.equals(query, mPokemonCurrentQuery);
     }
 
     @Override
@@ -95,4 +118,14 @@ public class PokemonAPIRepository implements
             mLoadingStatus.setValue(Status.ERROR);
         }
     }
+
+//    @Override
+//    public void onSearchFinished(PokeAPIUtils.PokeApiPokemonSearchReturn searchResults) {
+//        mPokemonSearchResult.setValue(searchResults);
+//        if (searchResults != null) {
+//            mLoadingStatus.setValue(Status.SUCCESS);
+//        } else {
+//            mLoadingStatus.setValue(Status.ERROR);
+//        }
+//    }
 }

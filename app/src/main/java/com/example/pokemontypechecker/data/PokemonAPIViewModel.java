@@ -13,6 +13,7 @@ public class PokemonAPIViewModel extends ViewModel{
 
     private LiveData<PokeAPIUtils.PokeApiGeneralTypeSearchReturn> mTypesSearchResults;
     private LiveData<PokeAPIUtils.PokeApiTypeReturn> mTypeSearchResults;
+    private LiveData<PokeAPIUtils.PokeApiPokemonSearchReturn> mPokemonSearchResult;
     private LiveData<Status> mLoadingStatus;
     private PokemonAPIRepository mRepository;
 
@@ -20,6 +21,7 @@ public class PokemonAPIViewModel extends ViewModel{
         mRepository = new PokemonAPIRepository();
         mTypesSearchResults = mRepository.getTypesSearchResults();
         mTypeSearchResults = mRepository.getTypeSearchResults();
+        mPokemonSearchResult = mRepository.getPokemonSearchResult();
         mLoadingStatus = mRepository.getLoadingStatus();
     }
 
@@ -39,8 +41,10 @@ public class PokemonAPIViewModel extends ViewModel{
         mRepository.loadAllTypesSearchResults(query);
     }
 
-    public void loadTypeSearchResults(String query) {
-        mRepository.loadTypeSearchResults(query);
+    public void loadTypeSearchResults(String url) {
+        mRepository.loadTypeSearchResults(url);
     }
+
+    public void loadPokemonSearchReult(String url) { mRepository.loadPokemonSearchResult(url);}
 
 }
