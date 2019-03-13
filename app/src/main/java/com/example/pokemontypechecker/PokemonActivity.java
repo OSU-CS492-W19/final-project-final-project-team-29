@@ -3,7 +3,10 @@ package com.example.pokemontypechecker;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,21 +16,22 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.pokemontypechecker.data.NameUrlPair;
-import com.example.pokemontypechecker.data.Pokemon;
-import com.example.pokemontypechecker.data.PokemonAPIViewModel;
+import com.example.pokemontypechecker.data.api_models.PokeAPIPokemon;
+import com.example.pokemontypechecker.data.view_models.PokemonAPITypeViewModel;
+import com.example.pokemontypechecker.data.api_models.NameUrlPair;
 import com.example.pokemontypechecker.data.Status;
-import com.example.pokemontypechecker.utils.PokeAPIUtils;
+import com.example.pokemontypechecker.data.api_models.PokeAPITypeReturn;
 import com.example.pokemontypechecker.utils.PokemonUtils;
+
+import java.util.List;
 
 public class PokemonActivity extends AppCompatActivity implements PokemonAdapter.OnPokemonClickListener {
 
     private static final String TAG = PokemonActivity.class.getSimpleName();
 
-
     private RecyclerView mPokemonNameListRV;
     private PokemonAdapter mPokemonAdapter;
-    private PokemonAPIViewModel mPokemonAPIViewModel;
+    private PokemonAPITypeViewModel mPokemonAPIViewModel;
     private ProgressBar mLoadingIndicatorPB;
     private TextView mTypeHeaderTV;
     private TextView mLoadingErrorTV;
@@ -51,6 +55,9 @@ public class PokemonActivity extends AppCompatActivity implements PokemonAdapter
         mPokemonNameListRV.setLayoutManager(new LinearLayoutManager(this));
         mPokemonNameListRV.setHasFixedSize(true);
 
+        if(savedInstanceState != null && savedInstanceState.get("name_url_pair") != null) {
+            mPokemonType = (NameUrlPair) savedInstanceState.get("name_url_pair");
+        }
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(PokemonUtils.POKEMON_TYPE)) {
@@ -58,14 +65,17 @@ public class PokemonActivity extends AppCompatActivity implements PokemonAdapter
             mTypeHeaderTV.setText(mPokemonType.name);
         }
 
-        mPokemonAPIViewModel = ViewModelProviders.of(this).get(PokemonAPIViewModel.class);
+        mPokemonAPIViewModel = ViewModelProviders.of(this).get(PokemonAPITypeViewModel.class);
 
-        mPokemonAPIViewModel.getTypeSearchResults().observe(this, new Observer<PokeAPIUtils.PokeApiTypeReturn>() {
+        mPokemonAPIViewModel.getTypeSearchResults().observe(this, new Observer<List<NameUrlPair>>() {
             @Override
-            public void onChanged(@Nullable PokeAPIUtils.PokeApiTypeReturn allTypes) {
-                mPokemonAdapter.updatePokemonResults(allTypes);
+            public void onChanged(@Nullable List<NameUrlPair> allPokemon) {
+                if(allPokemon != null) {
+                    mPokemonAdapter.updatePokemonResults(allPokemon);
+                }
             }
         });
+
 
         mPokemonAPIViewModel.getLoadingStatus().observe(this, new Observer<Status>() {
             @Override
@@ -84,13 +94,24 @@ public class PokemonActivity extends AppCompatActivity implements PokemonAdapter
             }
         });
 
-       getListOfPokemon();
+        getListOfPokemon();
     }
 
 
     private void getListOfPokemon() {
-        Log.d(TAG, mPokemonType.url);
-        mPokemonAPIViewModel.loadTypeSearchResults(mPokemonType.url);
+        if(mPokemonType != null) {
+            Log.d(TAG, mPokemonType.url);
+            mPokemonAPIViewModel.loadTypeSearchResults(mPokemonType.url);
+        } else {
+            mPokemonAPIViewModel.getTypeSearchResults();
+        }
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState){
+        outState.putSerializable("name_url_pair", mPokemonType);
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     @Override

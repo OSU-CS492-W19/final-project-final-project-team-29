@@ -4,15 +4,18 @@ import android.net.Uri;
 import android.support.annotation.IntDef;
 import android.util.Log;
 
-import com.example.pokemontypechecker.data.NameUrlPair;
-import com.example.pokemontypechecker.data.Pokemon;
-import com.example.pokemontypechecker.data.PokemonDetail;
-import com.example.pokemontypechecker.data.PokemonType;
+import com.example.pokemontypechecker.data.api_models.NameUrlPair;
+import com.example.pokemontypechecker.data.api_models.PokeAPIGeneralTypeSearchReturn;
+import com.example.pokemontypechecker.data.api_models.PokeAPIPokemon;
+import com.example.pokemontypechecker.data.api_models.PokeAPIPokemonSearchReturn;
+import com.example.pokemontypechecker.data.api_models.PokeAPIType;
+import com.example.pokemontypechecker.data.api_models.PokeAPITypeReturn;
 import com.google.gson.Gson;
 
-        import java.io.Serializable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class PokeAPIUtils {
@@ -57,40 +60,6 @@ public class PokeAPIUtils {
 
     }
 
-    /*
-     * These are the classes used to parse the PokeAPI JSON
-     */
-
-
-    public static class PokeApiMove implements Serializable{
-        public NameUrlPair move;
-    }
-
-    public static class PokeApiType implements Serializable{
-        public NameUrlPair type;
-    }
-
-    public static class PokeApiPokemon implements Serializable{
-        public NameUrlPair pokemon;
-    }
-
-    public static class PokeApiTypeReturn implements Serializable {
-        public String name;
-        public NameUrlPair[] moves;
-        public PokeApiPokemon[] pokemon;
-    }
-
-    public static class PokeApiPokemonSearchReturn implements Serializable{
-        public String name;
-        public PokeApiType[] types;
-        public PokeApiMove[] moves;
-    }
-
-    public static class PokeApiGeneralTypeSearchReturn implements Serializable {
-        public int count;
-        public NameUrlPair[] results;
-    }
-
 
     // Builds a URL for a search for all of the pokemon types
     public static String buildURL() {
@@ -103,44 +72,41 @@ public class PokeAPIUtils {
         return uri.toString();
     }
 
-    // Builds a URL for a search for the given type
-    public static String buildURL(@PokemonEnumType int type)
-    {
-        Uri uri =  Uri.parse(POKE_BASE_URL).buildUpon()
-                .appendPath(POKE_SEARCH_TYPE)
-                .appendPath(String.valueOf(type))
-                .build();
 
-        Log.d(TAG, "Built the URL: " + uri.toString());
-
-        return uri.toString();
-    }
-
-
-
-    public static PokeApiPokemonSearchReturn parsePokemonSearchJSON(String searchJSON) {
+    public static PokeAPIPokemonSearchReturn parsePokemonSearchJSON(String searchJSON) {
         Gson gson = new Gson();
 
-        PokeApiPokemonSearchReturn results = gson.fromJson(searchJSON, PokeApiPokemonSearchReturn.class);
+        PokeAPIPokemonSearchReturn results = gson.fromJson(searchJSON, PokeAPIPokemonSearchReturn.class);
 
         return results;
     }
 
-    public static PokeApiGeneralTypeSearchReturn parseGeneralTypeSearchJSON(String searchJSON) {
+    public static ArrayList<NameUrlPair> parseGeneralTypeSearchJSON(String searchJSON) {
         Gson gson = new Gson();
 
-        PokeApiGeneralTypeSearchReturn results = gson.fromJson(searchJSON, PokeApiGeneralTypeSearchReturn.class);
+        PokeAPIGeneralTypeSearchReturn results = gson.fromJson(searchJSON, PokeAPIGeneralTypeSearchReturn.class);
 
-        return results;
+        if (results != null && results.results != null) {
+            return results.results;
+        } else {
+            return null;
+        }
     }
 
-    public static PokeApiTypeReturn parseTypeSearchJSON(String typeSearchJSON) {
+    public static ArrayList<NameUrlPair>parseTypeSearchJSON(String typeSearchJSON) {
         Gson gson = new Gson();
 
-        PokeApiTypeReturn results = gson.fromJson(typeSearchJSON, PokeApiTypeReturn.class);
+        PokeAPITypeReturn result = gson.fromJson(typeSearchJSON, PokeAPITypeReturn.class);
+        ArrayList<NameUrlPair> nameUrlPairList = new ArrayList<>();
 
-        return results;
+        if (result != null && result.pokemon != null) {
+            for(PokeAPIPokemon pokemon : result.pokemon) {
+                nameUrlPairList.add(pokemon.pokemon);
+            }
+            return nameUrlPairList;
+        } else {
+            return null;
+        }
     }
-
 
 }

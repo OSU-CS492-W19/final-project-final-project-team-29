@@ -3,6 +3,7 @@ package com.example.pokemontypechecker.data.async;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.pokemontypechecker.data.api_models.PokeAPIPokemonSearchReturn;
 import com.example.pokemontypechecker.utils.NetworkUtils;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
@@ -14,7 +15,7 @@ public class PokeAPIPokemonAsyncTask extends AsyncTask<Void, Void, String> {
     private String mURL;
 
     public interface Callback {
-        void onSearchFinished(PokeAPIUtils.PokeApiPokemonSearchReturn searchResults);
+        void onSearchFinished(PokeAPIPokemonSearchReturn searchResults);
     }
 
     public PokeAPIPokemonAsyncTask(String url, PokeAPIPokemonAsyncTask.Callback callback) {
@@ -29,19 +30,23 @@ public class PokeAPIPokemonAsyncTask extends AsyncTask<Void, Void, String> {
 
     @Override
     protected String doInBackground(Void... voids) {
-        String resultsJSON = null;
-        try {
-            Log.d(TAG, mURL);
-            resultsJSON = NetworkUtils.doHTTPGet(mURL);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(mURL != null) {
+            String resultsJSON = null;
+            try {
+                Log.d(TAG, mURL);
+                resultsJSON = NetworkUtils.doHTTPGet(mURL);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return resultsJSON;
+        } else {
+            return null;
         }
-        return resultsJSON;
     }
 
     @Override
     protected void onPostExecute(String s) {
-        PokeAPIUtils.PokeApiPokemonSearchReturn searchResults = null;
+        PokeAPIPokemonSearchReturn searchResults = null;
         if (s != null) {
             searchResults = PokeAPIUtils.parsePokemonSearchJSON(s);
         }

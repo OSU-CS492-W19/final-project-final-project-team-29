@@ -1,4 +1,4 @@
-package com.example.pokemontypechecker.data;
+package com.example.pokemontypechecker.data.api_models;
 
 import java.io.Serializable;
 

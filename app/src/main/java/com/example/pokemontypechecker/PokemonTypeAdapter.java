@@ -6,11 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.pokemontypechecker.data.NameUrlPair;
-import com.example.pokemontypechecker.utils.PokeAPIUtils;
+import com.example.pokemontypechecker.data.api_models.NameUrlPair;
+import com.example.pokemontypechecker.data.api_models.PokeAPIGeneralTypeSearchReturn;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.PokemonTypeViewHolder> {
-    private PokeAPIUtils.PokeApiGeneralTypeSearchReturn mTypes;
+    private List<NameUrlPair> mTypes;
     OnTypeClickListener mTypeClickListener;
 
     public interface OnTypeClickListener {
@@ -21,7 +25,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
         mTypeClickListener = typeClickListener;
     }
 
-    public void updateSearchResults(PokeAPIUtils.PokeApiGeneralTypeSearchReturn types) {
+    public void updateSearchResults(List<NameUrlPair> types) {
         mTypes = types;
         notifyDataSetChanged();
     }
@@ -29,7 +33,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
     @Override
     public int getItemCount() {
         if (mTypes != null) {
-            return mTypes.count;
+            return mTypes.size();
         } else {
             return 0;
         }
@@ -45,7 +49,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull PokemonTypeViewHolder holder, int position) {
-        holder.bind(mTypes.results[position]);
+        holder.bind(mTypes.get(position));
     }
 
     class PokemonTypeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -59,7 +63,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 
         @Override
         public void onClick(View v) {
-            NameUrlPair type = mTypes.results[getAdapterPosition()];
+            NameUrlPair type = mTypes.get(getAdapterPosition());
             mTypeClickListener.onTypeClick(type);
         }
 
