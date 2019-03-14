@@ -16,11 +16,9 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.pokemontypechecker.data.api_models.PokeAPIPokemon;
 import com.example.pokemontypechecker.data.view_models.PokemonAPITypeViewModel;
 import com.example.pokemontypechecker.data.api_models.NameUrlPair;
 import com.example.pokemontypechecker.data.Status;
-import com.example.pokemontypechecker.data.api_models.PokeAPITypeReturn;
 import com.example.pokemontypechecker.utils.PokemonUtils;
 
 import java.util.List;
@@ -54,10 +52,6 @@ public class PokemonActivity extends AppCompatActivity implements PokemonAdapter
         mPokemonNameListRV.setAdapter(mPokemonAdapter);
         mPokemonNameListRV.setLayoutManager(new LinearLayoutManager(this));
         mPokemonNameListRV.setHasFixedSize(true);
-
-        if(savedInstanceState != null && savedInstanceState.get("name_url_pair") != null) {
-            mPokemonType = (NameUrlPair) savedInstanceState.get("name_url_pair");
-        }
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(PokemonUtils.POKEMON_TYPE)) {
@@ -94,9 +88,25 @@ public class PokemonActivity extends AppCompatActivity implements PokemonAdapter
             }
         });
 
+        getTypeToSearch();
         getListOfPokemon();
     }
 
+    private void getTypeToSearch() {
+        // update the current pokemon type search using shared preferences
+        SharedPreferences shared =  PreferenceManager.getDefaultSharedPreferences(this);
+        if(mPokemonType != null) {
+            SharedPreferences.Editor editor = shared.edit();
+            editor.putString(PokemonUtils.POKEMON_TYPE, mPokemonType.name);
+            editor.putString(PokemonUtils.POKEMON_URL, mPokemonType.url);
+            editor.apply();
+        } else {
+            mPokemonType = new NameUrlPair();
+            mPokemonType.name = shared.getString(PokemonUtils.POKEMON_TYPE, null);
+            mPokemonType.url = shared.getString(PokemonUtils.POKEMON_URL, null);
+            mTypeHeaderTV.setText(mPokemonType.name);
+        }
+    }
 
     private void getListOfPokemon() {
         if(mPokemonType != null) {
