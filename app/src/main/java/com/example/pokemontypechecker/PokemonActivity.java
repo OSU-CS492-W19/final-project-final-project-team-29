@@ -102,8 +102,8 @@ public class PokemonActivity extends AppCompatActivity implements PokemonAdapter
             editor.apply();
         } else {
             mPokemonType = new NameUrlPair();
-            mPokemonType.name = shared.getString(PokemonUtils.POKEMON_TYPE, null);
-            mPokemonType.url = shared.getString(PokemonUtils.POKEMON_URL, null);
+            mPokemonType.name = shared.getString(PokemonUtils.POKEMON_TYPE, "");
+            mPokemonType.url = shared.getString(PokemonUtils.POKEMON_URL, "");
             mTypeHeaderTV.setText(mPokemonType.name);
         }
     }
