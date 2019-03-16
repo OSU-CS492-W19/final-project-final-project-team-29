@@ -6,9 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.pokemontypechecker.data.api_models.NameUrlPair;
+import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
 import java.util.List;
 
@@ -54,10 +57,12 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
     class PokemonViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView mPokemonNameTV;
+        private ImageView mPokemonSpriteIV;
 
         public PokemonViewHolder(View itemView) {
             super(itemView);
             mPokemonNameTV = itemView.findViewById(R.id.tv_pokemon_name_item);
+            mPokemonSpriteIV = itemView.findViewById(R.id.iv_pokemon_name_item);
             itemView.setOnClickListener(this);
         }
 
@@ -68,7 +73,13 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
         }
 
         public void bind(NameUrlPair pokemon) {
+
             mPokemonNameTV.setText(pokemon.name);
+
+            String pokemonId = PokeAPIUtils.parseForPokemonIdFromUrl(pokemon);
+            String spriteUrl = String.format("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%s.png", pokemonId);
+
+            Glide.with(mPokemonSpriteIV.getContext()).load(spriteUrl).into(mPokemonSpriteIV);
         }
     }
 }
