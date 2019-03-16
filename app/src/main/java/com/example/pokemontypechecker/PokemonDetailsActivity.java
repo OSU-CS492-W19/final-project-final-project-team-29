@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,6 +34,8 @@ public class PokemonDetailsActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pokemon_datails);
+
+        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mPokemonDetailsTV = findViewById(R.id.tv_pokemon_details);
         mPokemonStarIV = findViewById(R.id.iv_pokemon_favorite);
@@ -96,4 +99,14 @@ public class PokemonDetailsActivity extends AppCompatActivity {
         mPokemonDBViewModel.getPokemonByName(mPokemon.name);
     }
 
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch(item.getItemId()) {
+//            default:
+//                Intent intent = new Intent(this, PokemonActivity.class);
+//                startActivity(intent);
+//                return true;
+//        }
+//
+//    }
 }
