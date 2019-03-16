@@ -21,14 +21,15 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.pokemontypechecker.data.NameUrlPair;
+import com.example.pokemontypechecker.data.api_models.NameUrlPair;
 
-import com.example.pokemontypechecker.data.PokemonAPIViewModel;
+import com.example.pokemontypechecker.data.view_models.PokemonAPITypesViewModel;
 import com.example.pokemontypechecker.data.Status;
+import com.example.pokemontypechecker.data.api_models.PokeAPIGeneralTypeSearchReturn;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 import com.example.pokemontypechecker.utils.PokemonUtils;
 
-
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements
     private TextView mLoadingErrorTV;
 
     private PokemonTypeAdapter mPokemonTypeAdapter;
-    private PokemonAPIViewModel mPokemonAPIViewModel;
+    private PokemonAPITypesViewModel mPokemonAPITypesViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,16 +73,18 @@ public class MainActivity extends AppCompatActivity implements
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        mPokemonAPIViewModel = ViewModelProviders.of(this).get(PokemonAPIViewModel.class);
+        mPokemonAPITypesViewModel = ViewModelProviders.of(this).get(PokemonAPITypesViewModel.class);
 
-        mPokemonAPIViewModel.getTypesSearchResults().observe(this, new Observer<PokeAPIUtils.PokeApiGeneralTypeSearchReturn>() {
+        mPokemonAPITypesViewModel.getTypesSearchResults().observe(this, new Observer<List<NameUrlPair>>() {
             @Override
-            public void onChanged(@Nullable PokeAPIUtils.PokeApiGeneralTypeSearchReturn allTypes) {
-                mPokemonTypeAdapter.updateSearchResults(allTypes);
+            public void onChanged(@Nullable List<NameUrlPair> allTypes) {
+                if(allTypes != null) {
+                    mPokemonTypeAdapter.updateSearchResults(allTypes);
+                }
             }
         });
 
-        mPokemonAPIViewModel.getLoadingStatus().observe(this, new Observer<Status>() {
+        mPokemonAPITypesViewModel.getLoadingStatus().observe(this, new Observer<Status>() {
             @Override
             public void onChanged(@Nullable Status status) {
                 if (status == Status.LOADING) {
@@ -107,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements
     {
         String url = PokeAPIUtils.buildURL();
         Log.d(TAG, url);
-        mPokemonAPIViewModel.loadTypesSearchResults(url);
+        mPokemonAPITypesViewModel.loadTypesSearchResults(url);
     }
 
     @Override

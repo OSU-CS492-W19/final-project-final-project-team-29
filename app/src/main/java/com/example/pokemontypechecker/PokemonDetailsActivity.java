@@ -7,26 +7,26 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.pokemontypechecker.data.NameUrlPair;
 import com.example.pokemontypechecker.data.Pokemon;
-import com.example.pokemontypechecker.data.PokemonAPIViewModel;
-import com.example.pokemontypechecker.utils.PokeAPIUtils;
+import com.example.pokemontypechecker.data.api_models.NameUrlPair;
+import com.example.pokemontypechecker.data.api_models.PokeAPIPokemonSearchReturn;
+import com.example.pokemontypechecker.data.view_models.PokemonAPIPokemonViewModel;
 import com.example.pokemontypechecker.utils.PokemonUtils;
 
 public class PokemonDetailsActivity extends AppCompatActivity {
     private static final String TAG = PokemonActivity.class.getSimpleName();
 
     private PokemonDBViewModel mPokemonDBViewModel;
-    private PokemonAPIViewModel mPokemonAPIViewModel;
+    private PokemonAPIPokemonViewModel mPokemonAPIViewModel;
 
     private TextView mPokemonDetailsTV;
     private ImageView mPokemonStarIV;
     private NameUrlPair mPokemon;
-    private PokeAPIUtils.PokeApiPokemonSearchReturn mPokemonReturn;
 
     private boolean mIsFavorite = false;
 
@@ -35,11 +35,13 @@ public class PokemonDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pokemon_datails);
 
+        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mPokemonDetailsTV = findViewById(R.id.tv_pokemon_details);
         mPokemonStarIV = findViewById(R.id.iv_pokemon_favorite);
 
         mPokemonDBViewModel = ViewModelProviders.of(this).get(PokemonDBViewModel.class);
-        mPokemonAPIViewModel = ViewModelProviders.of(this).get(PokemonAPIViewModel.class);
+        mPokemonAPIViewModel = ViewModelProviders.of(this).get(PokemonAPIPokemonViewModel.class);
 
         mPokemon = null;
         Intent intent = getIntent();
@@ -61,11 +63,10 @@ public class PokemonDetailsActivity extends AppCompatActivity {
 
         }
 
-        mPokemonAPIViewModel.getPokemonSearchResult().observe(this, new Observer<PokeAPIUtils.PokeApiPokemonSearchReturn>() {
+        mPokemonAPIViewModel.getPokemonSearchResult().observe(this, new Observer<PokeAPIPokemonSearchReturn>() {
             @Override
-            public void onChanged(@Nullable PokeAPIUtils.PokeApiPokemonSearchReturn pokemon) {
+            public void onChanged(@Nullable PokeAPIPokemonSearchReturn pokemon) {
                 if(pokemon != null) {
-                    mPokemonReturn = pokemon;
                     mPokemonDetailsTV.setText(pokemon.name);
                 }
             }
@@ -76,7 +77,7 @@ public class PokemonDetailsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mPokemon != null) {
                     Pokemon pokemon = new Pokemon();
-                    pokemon.name = mPokemonReturn.name;
+                    pokemon.name = mPokemon.name;
                     pokemon.url = mPokemon.url;
 
                     if (!mIsFavorite) {
@@ -94,7 +95,18 @@ public class PokemonDetailsActivity extends AppCompatActivity {
 
     private void getPokemon() {
         Log.d(TAG, mPokemon.url);
-        mPokemonAPIViewModel.loadPokemonSearchReult(mPokemon.url);
+        mPokemonAPIViewModel.loadPokemonSearchResults(mPokemon.url);
         mPokemonDBViewModel.getPokemonByName(mPokemon.name);
     }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch(item.getItemId()) {
+//            default:
+//                Intent intent = new Intent(this, PokemonActivity.class);
+//                startActivity(intent);
+//                return true;
+//        }
+//
+//    }
 }
