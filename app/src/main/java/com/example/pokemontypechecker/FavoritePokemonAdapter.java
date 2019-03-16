@@ -17,7 +17,7 @@ public class FavoritePokemonAdapter extends RecyclerView.Adapter<FavoritePokemon
     OnFavPokeClickListener mFavClickListener;
 
     public interface OnFavPokeClickListener {
-        void onFavClick(NameUrlPair type);
+        void onFavClick(Pokemon pokemon);
     }
 
     FavoritePokemonAdapter(OnFavPokeClickListener typeClickListener) {
@@ -62,11 +62,11 @@ public class FavoritePokemonAdapter extends RecyclerView.Adapter<FavoritePokemon
 
         @Override
         public void onClick(View v) {
-            NameUrlPair type = mPokemon.get(getAdapterPosition());
+            Pokemon type = mPokemon.get(getAdapterPosition());
             mFavClickListener.onFavClick(type);
         }
 
-        public void bind(NameUrlPair poke) {
+        public void bind(Pokemon poke) {
             mPokemonTypeTV.setText(poke.name);
         }
     }

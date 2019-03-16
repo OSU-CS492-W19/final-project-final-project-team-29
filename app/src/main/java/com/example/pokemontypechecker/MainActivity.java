@@ -33,6 +33,7 @@ import com.example.pokemontypechecker.utils.PokeAPIUtils;
 import com.example.pokemontypechecker.utils.PokemonUtils;
 
 import java.util.List;
+import java.util.jar.Attributes;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -149,9 +150,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onFavClick(NameUrlPair poke){
+    public void onFavClick(Pokemon poke){
+        NameUrlPair temp = new NameUrlPair();
+        temp.name = poke.name;
+        temp.url = poke.url;
         Intent intent = new Intent(this, PokemonDetailsActivity.class);
-        intent.putExtra(PokemonUtils.POKEMON_NAME, poke);
+        intent.putExtra(PokemonUtils.POKEMON_NAME, temp );
         startActivity(intent);
 
     }
