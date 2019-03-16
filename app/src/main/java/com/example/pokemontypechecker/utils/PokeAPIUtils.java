@@ -8,14 +8,12 @@ import com.example.pokemontypechecker.data.api_models.NameUrlPair;
 import com.example.pokemontypechecker.data.api_models.PokeAPIGeneralTypeSearchReturn;
 import com.example.pokemontypechecker.data.api_models.PokeAPIPokemon;
 import com.example.pokemontypechecker.data.api_models.PokeAPIPokemonSearchReturn;
-import com.example.pokemontypechecker.data.api_models.PokeAPIType;
 import com.example.pokemontypechecker.data.api_models.PokeAPITypeReturn;
 import com.google.gson.Gson;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class PokeAPIUtils {
@@ -107,6 +105,11 @@ public class PokeAPIUtils {
         } else {
             return null;
         }
+    }
+
+    public static String parseForPokemonIdFromUrl (NameUrlPair pair) {
+        String[] strs = pair.url.split("/");
+        return strs[strs.length - 1];
     }
 
 }
