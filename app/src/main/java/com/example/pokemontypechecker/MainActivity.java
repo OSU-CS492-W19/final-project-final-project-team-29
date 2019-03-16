@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,12 +16,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.pokemontypechecker.data.Pokemon;
 import com.example.pokemontypechecker.data.api_models.NameUrlPair;
 
 import com.example.pokemontypechecker.data.view_models.PokemonAPITypesViewModel;
@@ -30,11 +33,13 @@ import com.example.pokemontypechecker.utils.PokeAPIUtils;
 import com.example.pokemontypechecker.utils.PokemonUtils;
 
 import java.util.List;
+import java.util.jar.Attributes;
 
 
 public class MainActivity extends AppCompatActivity implements
         PokemonTypeAdapter.OnTypeClickListener,
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener,
+        FavoritePokemonAdapter.OnFavPokeClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -42,8 +47,15 @@ public class MainActivity extends AppCompatActivity implements
     private ProgressBar mLoadingIndicatorPB;
     private TextView mLoadingErrorTV;
 
+    private RecyclerView mFavPokeRV;
+    private FavoritePokemonAdapter mFavoritePokemonAdapter;
+
     private PokemonTypeAdapter mPokemonTypeAdapter;
     private PokemonAPITypesViewModel mPokemonAPITypesViewModel;
+
+    private PokemonDBViewModel mPokemonDBViewModel;
+    private DrawerLayout mDrawerLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,20 +66,37 @@ public class MainActivity extends AppCompatActivity implements
         mPokemonTypesRV = findViewById(R.id.rv_types_list);
         mLoadingIndicatorPB = findViewById(R.id.pb_loading_indicator);
         mLoadingErrorTV = findViewById(R.id.tv_loading_error_message);
+        mFavPokeRV = findViewById(R.id.rv_fav_poke);
 
         mPokemonTypeAdapter = new PokemonTypeAdapter(this);
         mPokemonTypesRV.setAdapter(mPokemonTypeAdapter);
         mPokemonTypesRV.setLayoutManager(new LinearLayoutManager(this));
         mPokemonTypesRV.setHasFixedSize(true);
 
+        mFavoritePokemonAdapter = new FavoritePokemonAdapter(this);
+        mFavPokeRV.setAdapter(mFavoritePokemonAdapter);
+        mFavPokeRV.setLayoutManager(new LinearLayoutManager(this));
+        mFavPokeRV.setHasFixedSize(true);
+
+        mPokemonDBViewModel = ViewModelProviders.of(this).get(PokemonDBViewModel.class);
+
+
         setSupportActionBar(toolbar);
 
+        //getSupportActionBar().setElevation(0);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+
+
+
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        //ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+         //       this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        //mDrawerLayout.addDrawerListener(toggle);
+        //toggle.syncState();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -120,6 +149,16 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(intent);
     }
 
+    @Override
+    public void onFavClick(Pokemon poke){
+        NameUrlPair temp = new NameUrlPair();
+        temp.name = poke.name;
+        temp.url = poke.url;
+        Intent intent = new Intent(this, PokemonDetailsActivity.class);
+        intent.putExtra(PokemonUtils.POKEMON_NAME, temp );
+        startActivity(intent);
+
+    }
 
     @Override
     public void onBackPressed() {
@@ -149,6 +188,19 @@ public class MainActivity extends AppCompatActivity implements
         if (id == R.id.action_settings) {
             return true;
         }
+        if( id == android.R.id.home) {
+            mPokemonDBViewModel.getAllPokemon().observe(this, new Observer<List<Pokemon>>() {
+                @Override
+                public void onChanged(@Nullable List<Pokemon> locationItems) {
+                    mFavoritePokemonAdapter.updateSearchResults(locationItems);
+                }
+            });
+                mDrawerLayout.openDrawer(Gravity.START);
+            return true;
+
+        }
+
+
 
         return super.onOptionsItemSelected(item);
     }

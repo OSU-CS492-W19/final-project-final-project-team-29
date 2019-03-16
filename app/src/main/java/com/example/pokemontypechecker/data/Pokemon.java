@@ -9,8 +9,11 @@ import com.example.pokemontypechecker.data.api_models.NameUrlPair;
 import java.io.Serializable;
 
 @Entity(tableName = "pokemon")
-public class Pokemon extends NameUrlPair implements Serializable {
+public class Pokemon implements Serializable {
     @NonNull
     @PrimaryKey
-    public int id;
+    public String name;
+
+    public String url;
+
 }
