@@ -8,14 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.Resource;
 import com.example.pokemontypechecker.data.api_models.NameUrlPair;
-import com.example.pokemontypechecker.data.api_models.PokeAPIGeneralTypeSearchReturn;
-import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.PokemonTypeViewHolder> {
@@ -34,6 +29,17 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 
     public void updateSearchResults(List<NameUrlPair> types) {
         mTypes = types;
+
+        // Remove non-standard types.
+        Iterator<NameUrlPair> it = mTypes.iterator();
+        for (Iterator<NameUrlPair> iter = mTypes.iterator(); iter.hasNext(); ) {
+            NameUrlPair pair = iter.next();
+            pair.name = pair.name.substring(0, 1).toUpperCase() + pair.name.substring(1);
+            if (pair.name.equals("shadow") || pair.name.equals("unknown")
+                    || pair.name.equals("Shadow") || pair.name.equals("Unknown")) {
+                iter.remove();
+            }
+        }
         notifyDataSetChanged();
     }
 
@@ -81,7 +87,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 
             mPokemonTypeTV.setText(type.name);
 
-            String fileName = type.name + "_type_icon";
+            String fileName = type.name.toLowerCase() + "_type_icon";
             int resID = res.getIdentifier(fileName, "drawable", mPackageName);
             if (resID != 0)
             mTypeSpriteIV.setImageResource(resID);

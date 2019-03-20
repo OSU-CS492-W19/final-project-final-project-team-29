@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.example.pokemontypechecker.data.api_models.NameUrlPair;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -30,6 +31,14 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
     public void updatePokemonResults(List<NameUrlPair> pokemon) {
         mPokemon = pokemon;
+
+        // Capitalize pokemon names.
+        Iterator<NameUrlPair> it = mPokemon.iterator();
+        for (Iterator<NameUrlPair> iter = mPokemon.iterator(); iter.hasNext(); ) {
+            NameUrlPair pair = iter.next();
+            pair.name = pair.name.substring(0, 1).toUpperCase() + pair.name.substring(1);
+        }
+
         notifyDataSetChanged();
     }
 
@@ -74,7 +83,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
         public void bind(NameUrlPair pokemon) {
 
-            mPokemonNameTV.setText(pokemon.name);
+            mPokemonNameTV.setText(pokemon.name );
 
             String pokemonId = PokeAPIUtils.parseForPokemonIdFromUrl(pokemon);
             String spriteUrl = String.format("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%s.png", pokemonId);

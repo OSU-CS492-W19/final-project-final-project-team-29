@@ -117,7 +117,7 @@ public class PokemonDetailsActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable PokeAPIPokemonSearchReturn pokemon) {
                 if (pokemon != null) {
-                    mPokemonDetailsTV.setText(pokemon.name);
+                    mPokemonDetailsTV.setText(pokemon.name.substring(0, 1).toUpperCase() + pokemon.name.substring(1));
                     String fileName = pokemon.types[0].type.name + "_type_tag";
                     String fileName2 = null;
                     if (pokemon.types.length > 1 ) {
