@@ -20,4 +20,5 @@
     <string name="_0_5x_damage">0.5x Damage</string>
     <string name="_0_25x_damage">0.25x Damage</string>
     <string name="no_damage">No Damage</string>
+    <string name="sprite_look_up">https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%1$s.png</string>
 </resources>
