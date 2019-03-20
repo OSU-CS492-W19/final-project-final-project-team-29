@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements
         mLoadingErrorTV = findViewById(R.id.tv_loading_error_message);
         mFavPokeRV = findViewById(R.id.rv_fav_poke);
 
-        mPokemonTypeAdapter = new PokemonTypeAdapter(this);
+        mPokemonTypeAdapter = new PokemonTypeAdapter(this, getPackageName());
         mPokemonTypesRV.setAdapter(mPokemonTypeAdapter);
         mPokemonTypesRV.setLayoutManager(new LinearLayoutManager(this));
         mPokemonTypesRV.setHasFixedSize(true);

@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.support.annotation.IntDef;
 import android.util.Log;
 
+import com.example.pokemontypechecker.data.Pokemon;
 import com.example.pokemontypechecker.data.api_models.NameUrlPair;
 import com.example.pokemontypechecker.data.api_models.PokeAPIGeneralTypeSearchReturn;
 import com.example.pokemontypechecker.data.api_models.PokeAPIPokemon;
@@ -109,6 +110,12 @@ public class PokeAPIUtils {
     }
 
     public static String parseForPokemonIdFromUrl (NameUrlPair pair) {
+        String[] strs = pair.url.split("/");
+        return strs[strs.length - 1];
+    }
+
+    // Because we have two of the same types and I don't wanna do any refactoring.
+    public static String parseForPokemonIdFromUrl (Pokemon pair) {
         String[] strs = pair.url.split("/");
         return strs[strs.length - 1];
     }
