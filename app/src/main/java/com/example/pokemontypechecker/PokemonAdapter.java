@@ -77,7 +77,6 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
             mPokemonNameTV.setText(pokemon.name);
 
             String pokemonId = PokeAPIUtils.parseForPokemonIdFromUrl(pokemon);
-//            String spriteUrl = getString(R.string.sprite_look_up, pokemonId);
             String spriteUrl = String.format("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%s.png", pokemonId);
 
             Glide.with(mPokemonSpriteIV.getContext()).load(spriteUrl).into(mPokemonSpriteIV);
