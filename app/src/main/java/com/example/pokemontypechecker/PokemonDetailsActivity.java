@@ -4,6 +4,9 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +17,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.Resource;
 import com.example.pokemontypechecker.data.Pokemon;
 import com.example.pokemontypechecker.data.api_models.NameUrlPair;
 import com.example.pokemontypechecker.data.api_models.PokeAPIPokemonSearchReturn;
@@ -21,6 +26,7 @@ import com.example.pokemontypechecker.data.view_models.PokemonAPIPokemonViewMode
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 import com.example.pokemontypechecker.utils.PokemonUtils;
 
+import java.io.File;
 import java.util.List;
 
 public class PokemonDetailsActivity extends AppCompatActivity {
@@ -31,7 +37,7 @@ public class PokemonDetailsActivity extends AppCompatActivity {
 
     private TextView mPokemonDetailsTV, mFourTimesTitleTV, mTwoTimesTitleTV,
                     mNormalTitleTV, mHalfTitleTV, mQuarterTitleTV, mNoDamageTitleTV;
-    private ImageView mPokemonStarIV;
+    private ImageView mPokemonStarIV, mPokemonSpriteIV, mPrimaryTypeTagIV, mSecondaryTypeTagIV;
     private TableLayout mDamageTable4, mDamageTable2, mDamageTable1,
             mDamageTableHalf, mDamageTableQuarter, mDamageTable0;
     private NameUrlPair mPokemon;
@@ -45,6 +51,11 @@ public class PokemonDetailsActivity extends AppCompatActivity {
 
         mPokemonDetailsTV = findViewById(R.id.tv_pokemon_details_name);
         mPokemonStarIV = findViewById(R.id.iv_pokemon_favorite);
+        mPokemonSpriteIV = findViewById(R.id.iv_pokemon_sprite);
+
+        mPrimaryTypeTagIV = findViewById(R.id.type_tag_primary);
+        mSecondaryTypeTagIV = findViewById(R.id.type_tag_secondary);
+
 
         mDamageTable4 = findViewById(R.id.tl_damage_table4);
         mDamageTable2 = findViewById(R.id.tl_damage_table2);
@@ -83,6 +94,12 @@ public class PokemonDetailsActivity extends AppCompatActivity {
             });
 
         }
+
+        String pokemonId = PokeAPIUtils.parseForPokemonIdFromUrl(mPokemon);
+        String spriteUrl = String.format("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%s.png", pokemonId);
+
+        Glide.with(mPokemonSpriteIV.getContext()).load(spriteUrl).into(mPokemonSpriteIV);
+
 //
 //        TableRow row = new TableRow(this);
 //        TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
@@ -101,6 +118,22 @@ public class PokemonDetailsActivity extends AppCompatActivity {
             public void onChanged(@Nullable PokeAPIPokemonSearchReturn pokemon) {
                 if (pokemon != null) {
                     mPokemonDetailsTV.setText(pokemon.name);
+                    String fileName = pokemon.types[0].type.name + "_type_tag";
+                    String fileName2 = null;
+                    if (pokemon.types.length > 1 ) {
+                        fileName2 = pokemon.types[1].type.name + "_type_tag";
+                    }
+
+                    int resID = getResources().getIdentifier(fileName, "drawable", getPackageName());
+
+                    mPrimaryTypeTagIV.setImageResource(resID);
+
+                    if (fileName2 != null) {
+                        int resID2 = getResources().getIdentifier(fileName2, "drawable", getPackageName());
+                        mSecondaryTypeTagIV.setImageResource(resID2);
+                    }
+
+
                     double[] damageMod = PokeAPIUtils.getTypeDamageModifiers(PokeAPIUtils.typeStringToEnum(pokemon.types));
                     for (int i = 0; i < damageMod.length; i ++)
                     {
