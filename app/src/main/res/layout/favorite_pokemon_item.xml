@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="horizontal"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:paddingRight="16dp"
+    android:paddingLeft="16dp"
+    android:paddingTop="10dp">
+
+    <ImageView
+        android:id="@+id/iv_pokemon_name_item"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:paddingRight="10dp"/>
+
+    <TextView
+        android:id="@+id/tv_fav_poke_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="26sp"
+        android:paddingTop="25dp"/>
+
+</LinearLayout>

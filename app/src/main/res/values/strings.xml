@@ -14,4 +14,11 @@
     <string name="drawer_nav_title_communicate">Communicate</string>
     <string name="title_activity_temp">TempActivity</string>
     <string name="loading_error_message">Whoops, we couldn\'t load the results.</string>
+    <string name="_4x_damage">4x Damage</string>
+    <string name="_2x_damage">2x Damage</string>
+    <string name="normal_damage">Normal Damage</string>
+    <string name="_0_5x_damage">0.5x Damage</string>
+    <string name="_0_25x_damage">0.25x Damage</string>
+    <string name="no_damage">No Damage</string>
+    <string name="sprite_look_up">https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%1$s.png</string>
 </resources>

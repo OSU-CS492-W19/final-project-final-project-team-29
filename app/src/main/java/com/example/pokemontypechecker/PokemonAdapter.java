@@ -1,19 +1,24 @@
 package com.example.pokemontypechecker;
 
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.pokemontypechecker.data.NameUrlPair;
-import com.example.pokemontypechecker.data.Pokemon;
+import com.bumptech.glide.Glide;
+import com.example.pokemontypechecker.data.api_models.NameUrlPair;
 import com.example.pokemontypechecker.utils.PokeAPIUtils;
 
+import java.util.Iterator;
+import java.util.List;
 
-public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder> {
-    private PokeAPIUtils.PokeApiTypeReturn mPokemon;
+
+public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder>  {
+    private List<NameUrlPair> mPokemon;
     private OnPokemonClickListener mPokemonClickListener;
 
     public interface OnPokemonClickListener {
@@ -24,8 +29,16 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
         mPokemonClickListener = pokemonClickListener;
     }
 
-    public void updatePokemonResults(PokeAPIUtils.PokeApiTypeReturn pokemon) {
+    public void updatePokemonResults(List<NameUrlPair> pokemon) {
         mPokemon = pokemon;
+
+        // Capitalize pokemon names.
+        Iterator<NameUrlPair> it = mPokemon.iterator();
+        for (Iterator<NameUrlPair> iter = mPokemon.iterator(); iter.hasNext(); ) {
+            NameUrlPair pair = iter.next();
+            pair.name = pair.name.substring(0, 1).toUpperCase() + pair.name.substring(1);
+        }
+
         notifyDataSetChanged();
     }
 
@@ -39,13 +52,13 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
     @Override
     public void onBindViewHolder(@NonNull PokemonViewHolder holder, int position) {
-        holder.bind(mPokemon.pokemon[position]);
+        holder.bind(mPokemon.get(position));
     }
 
     @Override
     public int getItemCount() {
         if (mPokemon != null) {
-            return mPokemon.pokemon.length;
+            return mPokemon.size();
         } else {
             return 0;
         }
@@ -53,21 +66,29 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonV
 
     class PokemonViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView mPokemonNameTV;
+        private ImageView mPokemonSpriteIV;
 
         public PokemonViewHolder(View itemView) {
             super(itemView);
             mPokemonNameTV = itemView.findViewById(R.id.tv_pokemon_name_item);
+            mPokemonSpriteIV = itemView.findViewById(R.id.iv_pokemon_name_item);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            PokeAPIUtils.PokeApiPokemon pokemon = mPokemon.pokemon[getAdapterPosition()];
-            mPokemonClickListener.onPokemonClick(pokemon.pokemon);
+            NameUrlPair pokemon = mPokemon.get(getAdapterPosition());
+            mPokemonClickListener.onPokemonClick(pokemon);
         }
 
-        public void bind(PokeAPIUtils.PokeApiPokemon pokemon) {
-            mPokemonNameTV.setText(pokemon.pokemon.name);
+        public void bind(NameUrlPair pokemon) {
+
+            mPokemonNameTV.setText(pokemon.name );
+
+            String pokemonId = PokeAPIUtils.parseForPokemonIdFromUrl(pokemon);
+            String spriteUrl = String.format("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%s.png", pokemonId);
+
+            Glide.with(mPokemonSpriteIV.getContext()).load(spriteUrl).into(mPokemonSpriteIV);
         }
     }
 }
